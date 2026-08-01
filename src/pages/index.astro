@@ -1,0 +1,259 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PhotoPrintTool from '../components/PhotoPrintTool.astro';
+
+const faqs = [
+  {
+    q: 'Can I print passport photos and ID cards on the same A4 sheet?',
+    a: 'Yes. Add each photo, choose its size (Passport, Stamp, PAN Application Photo, or ID Card), and the tool automatically arranges everything on A4 pages so you can cut them apart after printing.',
+  },
+  {
+    q: 'What size are Aadhar, Voter ID, and PAN cards for printing?',
+    a: 'Physical Indian ID cards (Aadhar, Voter ID/EPIC, PAN, Driving License) all follow the standard CR-80 card size of 85.6 x 54mm — the same size as a debit/credit card.',
+  },
+  {
+    q: 'Does this tool upload my photos to a server?',
+    a: 'No. Every photo you add is processed entirely inside your browser — nothing is uploaded anywhere, which keeps your ID documents private.',
+  },
+  {
+    q: 'Can I control how many copies of each photo get printed?',
+    a: 'Yes, each photo has its own copies field, and a "Fill Page" button that automatically calculates how many copies fit one A4 page for that size.',
+  },
+  {
+    q: 'How do I export the layout as a PDF?',
+    a: "Click \"Print / Save as PDF\" — this opens your browser's native print dialog, where you can choose \"Save as PDF\" as the destination instead of a physical printer.",
+  },
+  {
+    q: 'Does this work on mobile phones?',
+    a: 'Yes, the layout is fully responsive and works on Android and iOS browsers, including uploading photos directly from your camera.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<Layout
+  title="Photo Print Layout Tool — Arrange Multiple Photos on A4 & Export PDF"
+  description="Free online tool to arrange passport photos, ID cards (Aadhar, PAN, Voter ID), and stamp-size photos on one A4 page. Print or save as PDF instantly — 100% browser-based, no upload."
+>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="header-brand">
+        <svg viewBox="0 0 24 24" fill="none" width="28" height="28"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#F5AE0A" stroke-width="1.8"/><circle cx="12" cy="14" r="3.4" stroke="#F5AE0A" stroke-width="1.8"/><path d="M8 7l1.2-2.5h5.6L16 7" stroke="#F5AE0A" stroke-width="1.8"/></svg>
+        <span>Photo Print Tool</span>
+      </a>
+      <span class="header-badge">100% Free & Private</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="hero-title">Print Passport Photos &amp; ID Cards <em>Instantly</em></h1>
+        <p class="hero-sub">Arrange multiple photos on A4 pages — passport size, stamp size, PAN application, or CR-80 ID cards. Save as PDF or print directly. No upload, no signup.</p>
+      </div>
+      <div class="hero-illustration" aria-hidden="true">
+        <svg viewBox="0 0 200 283" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- A4 page -->
+          <rect x="0" y="0" width="200" height="283" rx="3" fill="#fff" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+          <!-- Crop marks -->
+          <g stroke="rgba(217,142,43,0.25)" stroke-width="0.6">
+            <!-- Top-left -->
+            <line x1="8" y1="0" x2="8" y2="5"/><line x1="0" y1="10" x2="5" y2="10"/>
+            <!-- Top-right -->
+            <line x1="192" y1="0" x2="192" y2="5"/><line x1="195" y1="10" x2="200" y2="10"/>
+            <!-- Bottom-left -->
+            <line x1="8" y1="278" x2="8" y2="283"/><line x1="0" y1="273" x2="5" y2="273"/>
+            <!-- Bottom-right -->
+            <line x1="192" y1="278" x2="192" y2="283"/><line x1="195" y1="273" x2="200" y2="273"/>
+          </g>
+          <!-- Photos grid -->
+          <g>
+            <rect x="10"  y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="34"  y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="58"  y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="82"  y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="106" y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="130" y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="154" y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="178" y="14" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+
+            <rect x="10"  y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="34"  y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="58"  y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="82"  y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="106" y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="130" y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="154" y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="178" y="44" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+
+            <rect x="10"  y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="34"  y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="58"  y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="82"  y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="106" y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="130" y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="154" y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="178" y="74" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+
+            <rect x="10"  y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="34"  y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="58"  y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="82"  y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="106" y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="130" y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="154" y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="178" y="104" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+
+            <rect x="10"  y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="34"  y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="58"  y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="82"  y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="106" y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="130" y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="154" y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="178" y="134" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+
+            <rect x="10"  y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="34"  y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="58"  y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="82"  y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="106" y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="130" y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="154" y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+            <rect x="178" y="164" width="20" height="26" rx="1" fill="#d98e2b" opacity="0.22"/>
+          </g>
+          <!-- Dashed cut lines between rows -->
+          <g stroke="rgba(255,255,255,0.07)" stroke-width="0.5" stroke-dasharray="2.5 2">
+            <line x1="5" y1="42" x2="195" y2="42"/>
+            <line x1="5" y1="72" x2="195" y2="72"/>
+            <line x1="5" y1="102" x2="195" y2="102"/>
+            <line x1="5" y1="132" x2="195" y2="132"/>
+            <line x1="5" y1="162" x2="195" y2="162"/>
+            <line x1="5" y1="192" x2="195" y2="192"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <main class="tool-section">
+    <PhotoPrintTool />
+  </main>
+
+  <section class="steps-section">
+    <div class="steps-inner">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Upload Photos</h3>
+          <p>Tap "Add Photos" and select images from your gallery or camera. Drag and drop also works.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Choose Size</h3>
+          <p>Pick passport, stamp, PAN application, US Visa, or ID Card size for each photo. Use "Fill Page" to auto-calculate copies.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Print or Save PDF</h3>
+          <p>Click "Print / Save as PDF" — choose "Save as PDF" in the print dialog to export, or send directly to your printer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section">
+    <div class="features-inner">
+      <h2 class="section-title">Why Use This Tool?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#272019" stroke-width="1.6"/></svg>
+          </div>
+          <h3>100% Private</h3>
+          <p>All processing happens in your browser. Photos never leave your device — critical for ID documents.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M12 2v20M2 12h20" stroke="#272019" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Completely Free</h3>
+          <p>No limits, no watermarks, no sign-up required. Use it as many times as you need.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#272019" stroke-width="1.6"/><path d="M3 9h18M9 3v18" stroke="#272019" stroke-width="1.6"/></svg>
+          </div>
+          <h3>A4 Optimized</h3>
+          <p>Automatically arranges photos to fit A4 pages with cutting guides. No wasted paper.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14" stroke="#272019" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="#272019" stroke-width="1.6"/></svg>
+          </div>
+          <h3>Multiple Sizes</h3>
+          <p>Passport, stamp, PAN application, US Visa, and CR-80 ID card sizes (Aadhar, PAN, Voter ID).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sizes-section">
+    <div class="sizes-inner">
+      <h2 class="section-title">Supported Photo Sizes</h2>
+      <div class="sizes-table-wrap">
+        <table class="sizes-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Dimensions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Passport Photo</td><td>3.5 × 4.5 cm</td></tr>
+            <tr><td>Stamp Size Photo</td><td>2 × 2.5 cm</td></tr>
+            <tr><td>PAN Application Photo</td><td>2.5 × 3.5 cm</td></tr>
+            <tr><td>US Visa Photo</td><td>2 × 2 inch (5.1 × 5.1 cm)</td></tr>
+            <tr><td>ID Card (Aadhar / PAN / Voter ID)</td><td>8.56 × 5.4 cm (CR-80)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-section">
+    <div class="faq-inner">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        {faqs.map((f) => (
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>{f.q}</span>
+              <span class="faq-icon">+</span>
+            </summary>
+            <p class="faq-answer">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Photo Print Tool — Free, private, browser-based. No uploads, no accounts.</p>
+      <p class="footer-sub">Built with Astro. All processing happens locally in your browser.</p>
+    </div>
+  </footer>
+
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</Layout>

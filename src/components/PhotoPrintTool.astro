@@ -1,0 +1,1393 @@
+---
+// Photo print layout tool — Photocopywala.in inspired design
+---
+
+<div class="ppt-app">
+  <!-- Header bar -->
+  <div class="ppt-tool-header">
+    <div class="ppt-tool-title">
+      <div class="ppt-tool-title-icon">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#272019" stroke-width="1.6"/><circle cx="12" cy="14" r="3.4" stroke="#272019" stroke-width="1.6"/><path d="M8 7l1.2-2.5h5.6L16 7" stroke="#272019" stroke-width="1.6"/></svg>
+      </div>
+      <div class="ppt-brand">
+        <h1>Passport Photo Maker</h1>
+        <span class="ppt-tag">A4 Print</span>
+      </div>
+    </div>
+    <div class="ppt-tool-actions">
+      <button class="ppt-action-btn" id="supportBtn">Support Us</button>
+      <button class="ppt-icon-btn" id="whatsNewBtn" title="What's new">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="1.6"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        What's new
+      </button>
+      <button class="ppt-icon-btn" id="fullScreenBtn" title="Full Screen">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Full Screen
+      </button>
+    </div>
+  </div>
+
+  <!-- Toolbar row -->
+  <div class="ppt-toolbar">
+    <div class="ppt-toolbar-left">
+      <button class="ppt-tool-btn" id="undoBtn" title="Undo">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M3 10h10a5 5 0 015 5v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 6L3 10l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Undo
+      </button>
+      <button class="ppt-tool-btn" id="redoBtn" title="Redo">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M21 10H11a5 5 0 00-5 5v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M17 6l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Redo
+      </button>
+      <button class="ppt-tool-btn" id="resetBtn" title="Reset all">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M1 4v6h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Reset all
+      </button>
+      <div class="ppt-toolbar-sep"></div>
+      <button class="ppt-tool-btn" id="zoomOutBtn" title="Zoom out">−</button>
+      <span class="ppt-zoom-label" id="zoomLabel">100%</span>
+      <button class="ppt-tool-btn" id="zoomInBtn" title="Zoom in">+</button>
+      <button class="ppt-tool-btn" id="fitBtn" title="Fit">Fit</button>
+      <div class="ppt-toolbar-sep"></div>
+      <button class="ppt-tool-btn" id="rotateLeftBtn" title="Rotate left">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M2.5 2v6h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.66 15.57a10 10 0 10.57-8.07L2.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Rotate left
+      </button>
+      <button class="ppt-tool-btn" id="rotateRightBtn" title="Rotate right">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M21.5 2v6h-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.34 15.57a10 10 0 11-.57-8.07L21.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Rotate right
+      </button>
+      <div class="ppt-toolbar-sep"></div>
+      <button class="ppt-tool-btn ppt-tool-btn-accent" id="hideGuidesBtn" title="Hide guides">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke="currentColor" stroke-width="1.6"/></svg>
+        Hide guides
+      </button>
+      <button class="ppt-tool-btn" id="compareBtn" title="Compare">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Compare
+      </button>
+    </div>
+    <div class="ppt-toolbar-right">
+      <div class="ppt-layout-toggle" id="layoutModeToggle">
+        <button class="ppt-layout-btn active" data-mode="auto">Auto-fill</button>
+        <button class="ppt-layout-btn" data-mode="manual">Manual</button>
+      </div>
+      <select class="ppt-size-select" id="sizePresetSelect">
+        <option value="passport">Passport (3.5×4.5cm)</option>
+        <option value="stamp">Stamp (2×2.5cm)</option>
+        <option value="panphoto">PAN Photo (2.5×3.5cm)</option>
+        <option value="visa2x2">US Visa (2×2 inch)</option>
+        <option value="idcard">ID Card CR-80</option>
+        <option value="postcard">Postcard (4×6 inch)</option>
+        <option value="custom">Custom</option>
+      </select>
+      <button class="ppt-download-btn" id="downloadBtn">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download
+      </button>
+    </div>
+  </div>
+
+  <!-- Main body: 3-column -->
+  <div class="ppt-tool-body">
+    <!-- Left sidebar — photo list (collapsible) -->
+    <aside class="ppt-sidebar" id="sidebar">
+      <div class="ppt-sidebar-head">
+        <label class="ppt-upload" id="uploadBox" for="fileInput">
+          <strong>+ Add Photos</strong>
+        </label>
+        <input type="file" id="fileInput" accept="image/*" multiple aria-label="Upload photos">
+        <div class="ppt-upload-status" id="uploadStatus"></div>
+
+        <button class="ppt-controls-toggle" id="controlsToggle">
+          <svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Settings
+        </button>
+        <div class="ppt-controls ppt-controls-hidden" id="controlsPanel">
+          <div class="ppt-field"><label for="pageMargin">Margin (mm)</label><input type="number" id="pageMargin" value="5" min="0" max="20" step="1"></div>
+          <div class="ppt-field"><label for="photoGap">Gap (mm)</label><input type="number" id="photoGap" value="2" min="0" max="10" step="0.5"></div>
+          <div class="ppt-field"><label for="layoutMode">Layout</label><select id="layoutMode"><option value="auto">Auto Fill</option><option value="rows">Limit Rows</option></select></div>
+          <div class="ppt-field" id="maxRowsField" style="display:none"><label for="maxRows">Rows/Page</label><input type="number" id="maxRows" value="2" min="1" max="10"></div>
+        </div>
+      </div>
+
+      <div class="ppt-sidebar-mid">
+        <div class="ppt-eyebrow">Photos (<span id="photoCount">0</span>)</div>
+        <div class="ppt-photolist" id="photoList">
+          <div class="ppt-empty" id="emptyHint">No photos added yet.<br>Upload using the box above.</div>
+        </div>
+      </div>
+
+      <div class="ppt-sidebar-foot">
+        <div class="ppt-stats" id="stats">
+          <div class="ppt-stat"><span>Total Prints</span><b id="statPrints">0</b></div>
+          <div class="ppt-stat"><span>Pages</span><b id="statPages">0</b></div>
+        </div>
+        <button class="ppt-btn-ghost" id="clearBtn">Clear All</button>
+      </div>
+    </aside>
+
+    <!-- Center — A4 Preview -->
+    <main class="ppt-preview" id="previewArea">
+      <div class="ppt-empty-msg" id="noPhotosMsg">
+        <span class="ppt-empty-icon">🖼️</span>
+        Preview will appear here.<br>Upload photos from the sidebar to get started.
+      </div>
+    </main>
+
+    <!-- Right sidebar — tabs: Settings / Preview / Quick Actions -->
+    <aside class="ppt-right-panel">
+      <div class="ppt-right-tabs">
+        <button class="ppt-tab-btn active" data-tab="settings">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+          Settings
+        </button>
+        <button class="ppt-tab-btn" data-tab="preview">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+          Preview
+        </button>
+        <button class="ppt-tab-btn" data-tab="quick">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Quick Actions
+        </button>
+      </div>
+
+      <div class="ppt-right-content">
+        <!-- Settings tab -->
+        <div class="ppt-tab-panel active" id="tabSettings">
+          <div class="ppt-panel-section">
+            <div class="ppt-panel-label">PREVIEW</div>
+            <div class="ppt-panel-row">
+              <span class="ppt-panel-dim" id="previewDimensions">—</span>
+            </div>
+          </div>
+          <div class="ppt-panel-section">
+            <div class="ppt-panel-label">ZOOM</div>
+            <div class="ppt-panel-row">
+              <input type="range" class="ppt-slider" id="zoomSlider" min="10" max="300" value="100" />
+              <span class="ppt-slider-val" id="zoomSliderVal">100%</span>
+            </div>
+          </div>
+          <div class="ppt-panel-section">
+            <div class="ppt-panel-label">STRAIGHTEN</div>
+            <div class="ppt-panel-row">
+              <input type="range" class="ppt-slider" id="straightenSlider" min="-45" max="45" value="0" />
+              <span class="ppt-slider-val" id="straightenVal">0°</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview tab -->
+        <div class="ppt-tab-panel" id="tabPreview">
+          <div class="ppt-panel-section">
+            <div class="ppt-panel-label">PREVIEW</div>
+            <div class="ppt-panel-dim" id="previewDimensions2">—</div>
+          </div>
+          <div class="ppt-panel-section">
+            <div class="ppt-panel-label">PRINT SIZE</div>
+            <div class="ppt-panel-info">A4 (210 × 297 mm)</div>
+          </div>
+          <div class="ppt-panel-section">
+            <div class="ppt-panel-label">PHOTO COUNT</div>
+            <div class="ppt-panel-info" id="previewPhotoCount">0 photos</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions tab -->
+        <div class="ppt-tab-panel" id="tabQuick">
+          <div class="ppt-panel-section">
+            <button class="ppt-action-block" id="changePhotoBtn">
+              <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/></svg>
+              Change Photo
+            </button>
+          </div>
+          <div class="ppt-panel-section">
+            <button class="ppt-action-block" id="autofixBtn">
+              <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Auto-fix
+            </button>
+          </div>
+          <div class="ppt-panel-section">
+            <button class="ppt-action-block" id="checkPhotoBtn">
+              <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Check photo
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Bottom action bar -->
+  <div class="ppt-bottom-bar">
+    <div class="ppt-bottom-center">
+      <button class="ppt-bottom-btn" id="previewBtn">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+        Preview
+      </button>
+    </div>
+    <div class="ppt-bottom-right">
+      <button class="ppt-bottom-btn ppt-bottom-primary" id="downloadBtnBottom">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download
+      </button>
+      <button class="ppt-bottom-btn ppt-bottom-primary" id="printBtnBottom">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" stroke="currentColor" stroke-width="1.6"/><rect x="6" y="14" width="12" height="8" stroke="currentColor" stroke-width="1.6"/></svg>
+        Print
+      </button>
+      <button class="ppt-bottom-btn ppt-bottom-whatsapp" id="shareWhatsAppBtn" style="background:#25D366;color:#fff;border-color:#25D366">
+        <span class="ppt-whatsapp-text">WhatsApp</span>
+        <span class="ppt-whatsapp-icon" style="font-size:15px;line-height:1">&#x1F4AC;</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="ppt-toast" id="toast"></div>
+
+<script>
+(function() {
+  "use strict";
+
+  const SIZE_GROUPS = {
+    "Photo Sizes": {
+      passport: { label: "Passport (3.5×4.5cm)", w: 35, h: 45 },
+      stamp:    { label: "Stamp Size (2×2.5cm)", w: 20, h: 25 },
+      panphoto: { label: "PAN Application Photo (2.5×3.5cm)", w: 25, h: 35 },
+      visa2x2:  { label: "US Visa (2×2 inch)", w: 51, h: 51 },
+      postcard: { label: "Postcard (4×6 inch)", w: 101.6, h: 152.4 }
+    },
+    "ID Cards": {
+      idcard: { label: "ID Card — CR-80 (8.56×5.4cm)", w: 85.6, h: 54 }
+    },
+    "Other": {
+      custom: { label: "Custom Size", w: 35, h: 45 }
+    }
+  };
+  const SIZE_PRESETS = Object.assign({}, ...Object.values(SIZE_GROUPS));
+  const ID_CARD_KEY = 'idcard';
+  const ID_CARD_SETTINGS = { margin: 30, gap: 30, layoutMode: 'rows', maxRows: 2 };
+
+  const PW = 210, PH = 297;
+  const PW_PX = 793.7, PH_PX = 1122.5;
+  const MAX_DIM = 1600;
+  const MAX_PHOTOS = 60;
+  const MAX_UNDO = 50;
+
+  let photos = [];
+  let nextId = 0;
+  let idCardActive = false;
+  let savedSettings = null;
+  let layoutCache = null;
+  let layoutDirty = true;
+  let zoomLevel = 100;
+  let guidesVisible = true;
+  let selectedPhotoId = null;
+  let compareMode = false;
+  let layoutModeType = 'auto'; // 'auto' | 'manual'
+  let copyPositions = {}; // { "photoId-copyIdx": { x, y } } for manual mode
+  let nextPlaceX = 20, nextPlaceY = 20; // cascade position for new items in manual mode
+  let undoStack = [];
+  let redoStack = [];
+
+  const $ = id => document.getElementById(id);
+  const fileInput = $('fileInput');
+  const uploadBox = $('uploadBox');
+  const uploadStatus = $('uploadStatus');
+  const photoList = $('photoList');
+  const emptyHint = $('emptyHint');
+  const photoCountEl = $('photoCount');
+  const statPrints = $('statPrints');
+  const statPages = $('statPages');
+  const previewArea = $('previewArea');
+  const noPhotosMsg = $('noPhotosMsg');
+  const pageMargin = $('pageMargin');
+  const photoGap = $('photoGap');
+  const layoutMode = $('layoutMode');
+  const maxRowsInput = $('maxRows');
+  const maxRowsField = $('maxRowsField');
+  const toastEl = $('toast');
+  const zoomLabel = $('zoomLabel');
+  const zoomSlider = $('zoomSlider');
+  const zoomSliderVal = $('zoomSliderVal');
+  const straightenSlider = $('straightenSlider');
+  const straightenVal = $('straightenVal');
+  const previewDimensions = $('previewDimensions');
+  const previewDimensions2 = $('previewDimensions2');
+  const previewPhotoCount = $('previewPhotoCount');
+  const hideGuidesBtn = $('hideGuidesBtn');
+
+  let toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+  }
+
+  // ── Canvas rotation helper ──
+  // Pre-rotates image data via canvas. For 0° returns src unchanged.
+  // For 90°/270° swaps dimensions. For other angles scales up to prevent gaps.
+  function rotateImageSrc(src, angle) {
+    if (!angle || angle === 0 || angle === 360 || angle === -360) return src;
+    const norm = ((angle % 360) + 360) % 360;
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        if (norm === 90 || norm === 270) {
+          const c = document.createElement('canvas');
+          c.width = img.height; c.height = img.width;
+          const ctx = c.getContext('2d');
+          ctx.translate(c.width / 2, c.height / 2);
+          ctx.rotate(norm * Math.PI / 180);
+          ctx.drawImage(img, -img.width / 2, -img.height / 2);
+          resolve(c.toDataURL('image/jpeg', 0.92));
+        } else {
+          const rad = norm * Math.PI / 180;
+          const absRad = Math.abs(rad);
+          const sin = Math.sin(absRad), cos = Math.cos(absRad);
+          const bboxW = img.width * cos + img.height * sin;
+          const bboxH = img.width * sin + img.height * cos;
+          const scale = Math.max(img.width / bboxW, img.height / bboxH) * 1.02;
+          const c = document.createElement('canvas');
+          c.width = Math.ceil(bboxW * scale);
+          c.height = Math.ceil(bboxH * scale);
+          const ctx = c.getContext('2d');
+          ctx.translate(c.width / 2, c.height / 2);
+          ctx.rotate(rad);
+          ctx.scale(scale, scale);
+          ctx.drawImage(img, -img.width / 2, -img.height / 2);
+          resolve(c.toDataURL('image/jpeg', 0.92));
+        }
+      };
+      img.onerror = () => resolve(src);
+      img.src = src;
+    });
+  }
+
+  // ── Undo / Redo ──
+  // Snapshots store full photo objects (including src) so deleted photos can be restored.
+  function getSnapshot() {
+    return {
+      photos: photos.map(p => ({
+        id: p.id, src: p.src, originalSrc: p.originalSrc, name: p.name,
+        sizeKey: p.sizeKey, customW: p.customW, customH: p.customH,
+        copies: p.copies, rotation: p.rotation || 0, straighten: p.straighten || 0,
+        fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50
+      })),
+      nextId,
+      margin: pageMargin.value,
+      gap: photoGap.value,
+      layoutMode: layoutMode.value,
+      maxRows: maxRowsInput.value,
+      selectedPhotoId,
+      layoutModeType,
+      copyPositions: JSON.parse(JSON.stringify(copyPositions)),
+      nextPlaceX, nextPlaceY
+    };
+  }
+  function pushUndo() {
+    undoStack.push(getSnapshot());
+    redoStack = [];
+    if (undoStack.length > MAX_UNDO) undoStack.shift();
+    updateUndoRedoButtons();
+  }
+  function restoreState(state) {
+    pageMargin.value = state.margin;
+    photoGap.value = state.gap;
+    layoutMode.value = state.layoutMode;
+    maxRowsInput.value = state.maxRows;
+    maxRowsField.style.display = state.layoutMode === 'rows' ? '' : 'none';
+    selectedPhotoId = state.selectedPhotoId;
+    nextId = state.nextId || photos.reduce((m, p) => Math.max(m, p.id + 1), 0);
+    // Reconstruct full photos array from snapshot (restores deleted photos)
+    photos = state.photos.map(sp => ({
+      id: sp.id, src: sp.src, originalSrc: sp.originalSrc || sp.src, name: sp.name,
+      sizeKey: sp.sizeKey, customW: sp.customW, customH: sp.customH,
+      copies: sp.copies, rotation: sp.rotation || 0, straighten: sp.straighten || 0,
+      fitMode: sp.fitMode || 'cover', posX: sp.posX ?? 50, posY: sp.posY ?? 50
+    }));
+    // Restore layout mode
+    if (state.layoutModeType) {
+      layoutModeType = state.layoutModeType;
+      copyPositions = state.copyPositions || {};
+      nextPlaceX = state.nextPlaceX ?? 20;
+      nextPlaceY = state.nextPlaceY ?? 20;
+      updateLayoutToggle();
+    }
+    updateStraightenSlider();
+    layoutDirty = true;
+    renderAll();
+  }
+  function undo() {
+    if (!undoStack.length) return;
+    redoStack.push(getSnapshot());
+    restoreState(undoStack.pop());
+    toast('Undone');
+  }
+  function redo() {
+    if (!redoStack.length) return;
+    undoStack.push(getSnapshot());
+    restoreState(redoStack.pop());
+    toast('Redone');
+  }
+  function updateUndoRedoButtons() {
+    $('undoBtn').classList.toggle('ppt-disabled', !undoStack.length);
+    $('redoBtn').classList.toggle('ppt-disabled', !redoStack.length);
+  }
+
+  // ── File handling ──
+  fileInput.addEventListener('change', e => { addFiles(e.target.files); fileInput.value = ''; });
+  uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.classList.add('dragover'); });
+  uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+  uploadBox.addEventListener('drop', e => { e.preventDefault(); uploadBox.classList.remove('dragover'); addFiles(e.dataTransfer.files); });
+
+  async function addFiles(list) {
+    const files = [...list].filter(f => f.type.startsWith('image/'));
+    if (!files.length) return;
+    if (photos.length + files.length > MAX_PHOTOS) toast('Max ' + MAX_PHOTOS + ' photos allowed.');
+    pushUndo();
+    uploadStatus.textContent = 'Processing 0/' + files.length + '…';
+    let done = 0, fail = 0;
+    for (const file of files) {
+      if (photos.length >= MAX_PHOTOS) break;
+      try {
+        const src = await downscale(file, MAX_DIM);
+        const p = { id: nextId++, src: src, originalSrc: src, name: file.name || 'Photo ' + nextId, sizeKey: 'passport', customW: 35, customH: 45, copies: 1, rotation: 0, straighten: 0, fitMode: 'cover', posX: 50, posY: 50 };
+        photos.push(p);
+        // Set initial position in manual mode
+        if (layoutModeType === 'manual') {
+          copyPositions[p.id + '-0'] = { x: nextPlaceX, y: nextPlaceY };
+          nextPlaceX += 40;
+          if (nextPlaceX > PW - 40) { nextPlaceX = 20; nextPlaceY += 55; }
+          if (nextPlaceY > PH - 50) { nextPlaceY = 20; }
+        }
+        if (selectedPhotoId === null) selectedPhotoId = p.id;
+      } catch (e) { console.error('Failed:', file.name, e); fail++; }
+      done++;
+      uploadStatus.textContent = 'Processing ' + done + '/' + files.length + '…';
+    }
+    if (fail) toast(fail + ' file' + (fail > 1 ? 's' : '') + ' could not be loaded.');
+    uploadStatus.textContent = '';
+    layoutDirty = true;
+    renderAll();
+  }
+
+  function downscale(file, max) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onerror = () => rej(new Error('read failed'));
+      r.onload = () => {
+        const img = new Image();
+        img.onerror = () => rej(new Error('decode failed'));
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > max || h > max) { const s = Math.min(max / w, max / h); w = Math.round(w * s); h = Math.round(h * s); }
+          const c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          res(c.toDataURL('image/jpeg', 0.9));
+        };
+        img.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  // ── Layout ──
+  function getLayout() {
+    if (layoutDirty || !layoutCache) { layoutCache = computeLayout(); layoutDirty = false; }
+    return layoutCache;
+  }
+
+  function getSizeMM(p) {
+    const base = p.sizeKey === 'custom' ? { w: p.customW, h: p.customH } : (SIZE_PRESETS[p.sizeKey] || { w: 35, h: 45 });
+    const rot = p.rotation || 0;
+    if (rot === 90 || rot === 270) return { w: base.h, h: base.w };
+    return { w: base.w, h: base.h };
+  }
+
+  function getMaxRows() {
+    return layoutMode.value === 'rows' ? Math.max(1, parseInt(maxRowsInput.value) || 2) : null;
+  }
+
+  function computeLayout() {
+    const mg = Math.max(0, parseFloat(pageMargin.value) || 0);
+    const gp = Math.max(0, parseFloat(photoGap.value) || 0);
+    const mr = getMaxRows();
+    const uw = PW - mg * 2, uh = PH - mg * 2;
+
+    if (layoutModeType === 'manual') {
+      // Manual mode: each item gets position from copyPositions
+      const pages = [[]];
+      let copyIdx = 0;
+      photos.forEach(p => {
+        const s = getSizeMM(p);
+        for (let i = 0; i < p.copies; i++) {
+          const key = p.id + '-' + i;
+          const pos = copyPositions[key] || { x: mg + (copyIdx % 8) * (s.w + gp), y: mg + Math.floor(copyIdx / 8) * (s.h + gp) };
+          const item = { src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50, x: pos.x, y: pos.y, copyKey: key };
+          pages[0].push({ items: [item], height: s.h });
+          copyIdx++;
+        }
+      });
+      return { pages, margin: mg, gap: gp, maxRows: mr };
+    }
+
+    // Auto-fill mode (existing shelf-packing)
+    const items = [];
+    photos.forEach(p => { const s = getSizeMM(p); for (let i = 0; i < p.copies; i++) items.push({ src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50 }); });
+    const pages = [];
+    let curPage = [], rowItems = [], rowW = 0, rowH = 0, pageH = 0, rows = 0;
+    function flushRow() {
+      if (!rowItems.length) return;
+      curPage.push({ items: rowItems, height: rowH });
+      pageH += rowH + gp; rows++;
+      rowItems = []; rowW = 0; rowH = 0;
+    }
+    function flushPage() {
+      flushRow();
+      if (curPage.length) pages.push(curPage);
+      curPage = []; pageH = 0; rows = 0;
+    }
+    // Compute auto positions for each item
+    let autoX = mg, autoY = mg;
+    let autoRowH = 0;
+    items.forEach(item => {
+      if (item.w > uw || item.h > uh) { item.w = Math.min(item.w, uw); item.h = Math.min(item.h, uh); }
+      const wIf = autoX - mg + (rowItems.length ? gp : 0) + item.w;
+      if (rowItems.length && wIf > uw) {
+        if (mr && rows + 1 >= mr) { flushPage(); autoX = mg; autoY = mg + pageH; }
+        else { flushRow(); autoY += autoRowH + gp; autoX = mg; autoRowH = 0; }
+      }
+      item.x = autoX;
+      item.y = autoY;
+      autoX += item.w + gp;
+      autoRowH = Math.max(autoRowH, item.h);
+      const newH = Math.max(rowH, item.h);
+      if (!rowItems.length && pageH + newH > uh && curPage.length) {
+        flushPage(); autoX = mg; autoY = mg + pageH; autoRowH = 0;
+      }
+      rowItems.push(item);
+      rowW += (rowItems.length > 1 ? gp : 0) + item.w;
+      rowH = Math.max(rowH, item.h);
+    });
+    flushPage();
+    return { pages, margin: mg, gap: gp, maxRows: mr };
+  }
+
+  // ── Rendering ──
+  function renderPhotoList() {
+    photoCountEl.textContent = photos.length;
+    if (previewPhotoCount) previewPhotoCount.textContent = photos.length + ' photo' + (photos.length !== 1 ? 's' : '');
+    photoList.querySelectorAll('.ppt-card').forEach(c => c.remove());
+    if (!photos.length) { emptyHint.style.display = ''; return; }
+    emptyHint.style.display = 'none';
+    const frag = document.createDocumentFragment();
+    photos.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'ppt-card' + (p.id === selectedPhotoId ? ' ppt-card-selected' : '');
+      card.dataset.id = p.id;
+      const img = document.createElement('img');
+      img.src = p.src; img.alt = p.name; img.loading = 'lazy';
+      card.appendChild(img);
+      const meta = document.createElement('div');
+      meta.className = 'ppt-meta';
+      const row1 = document.createElement('div');
+      row1.className = 'ppt-row';
+      const sizeField = document.createElement('div');
+      sizeField.className = 'ppt-field';
+      sizeField.style.flex = '1.4';
+      const sl = document.createElement('label'); sl.textContent = 'Size'; sizeField.appendChild(sl);
+      const sel = document.createElement('select');
+      sel.className = 'sizeSelect'; sel.dataset.id = p.id;
+      Object.entries(SIZE_GROUPS).forEach(([gl, opts]) => {
+        const og = document.createElement('optgroup'); og.label = gl;
+        Object.entries(opts).forEach(([k, v]) => {
+          const o = document.createElement('option'); o.value = k; o.textContent = v.label;
+          if (p.sizeKey === k) o.selected = true;
+          og.appendChild(o);
+        });
+        sel.appendChild(og);
+      });
+      sizeField.appendChild(sel);
+      row1.appendChild(sizeField);
+      const cpField = document.createElement('div');
+      cpField.className = 'ppt-field';
+      cpField.style.flex = '.8';
+      const cl = document.createElement('label'); cl.textContent = 'Copies'; cpField.appendChild(cl);
+      const ci = document.createElement('input');
+      ci.type = 'number'; ci.className = 'copiesInput'; ci.dataset.id = p.id;
+      ci.value = p.copies; ci.min = '1'; ci.max = '99';
+      cpField.appendChild(ci);
+      row1.appendChild(cpField);
+      meta.appendChild(row1);
+      if (p.sizeKey === 'custom') {
+        const rc = document.createElement('div'); rc.className = 'ppt-row';
+        const wf = document.createElement('div'); wf.className = 'ppt-field';
+        const wl = document.createElement('label'); wl.textContent = 'W (cm)'; wf.appendChild(wl);
+        const wi = document.createElement('input'); wi.type = 'number'; wi.className = 'customW'; wi.dataset.id = p.id;
+        wi.value = (p.customW / 10).toFixed(1); wi.step = '0.1'; wi.min = '0.5';
+        wf.appendChild(wi); rc.appendChild(wf);
+        const hf = document.createElement('div'); hf.className = 'ppt-field';
+        const hl = document.createElement('label'); hl.textContent = 'H (cm)'; hf.appendChild(hl);
+        const hi = document.createElement('input'); hi.type = 'number'; hi.className = 'customH'; hi.dataset.id = p.id;
+        hi.value = (p.customH / 10).toFixed(1); hi.step = '0.1'; hi.min = '0.5';
+        hf.appendChild(hi); rc.appendChild(hf);
+        meta.appendChild(rc);
+      }
+      // Fit mode + position row
+      const rowFit = document.createElement('div');
+      rowFit.className = 'ppt-row';
+      rowFit.style.alignItems = 'flex-end';
+      const fitField = document.createElement('div');
+      fitField.className = 'ppt-field';
+      fitField.style.flex = '1';
+      const fitLabel = document.createElement('label'); fitLabel.textContent = 'Fit';
+      fitField.appendChild(fitLabel);
+      const fitToggle = document.createElement('div');
+      fitToggle.className = 'ppt-fit-toggle';
+      fitToggle.dataset.id = p.id;
+      const coverBtn = document.createElement('button');
+      coverBtn.className = 'ppt-fit-btn' + (p.fitMode !== 'contain' ? ' active' : '');
+      coverBtn.dataset.mode = 'cover'; coverBtn.textContent = 'Cover';
+      const containBtn = document.createElement('button');
+      containBtn.className = 'ppt-fit-btn' + (p.fitMode === 'contain' ? ' active' : '');
+      containBtn.dataset.mode = 'contain'; containBtn.textContent = 'Fit';
+      fitToggle.appendChild(coverBtn);
+      fitToggle.appendChild(containBtn);
+      fitField.appendChild(fitToggle);
+      rowFit.appendChild(fitField);
+      // Position sliders (only for cover mode)
+      if (p.fitMode !== 'contain') {
+        const posFieldX = document.createElement('div');
+        posFieldX.className = 'ppt-field';
+        posFieldX.style.flex = '1';
+        const posXLabel = document.createElement('label'); posXLabel.textContent = 'X ' + (p.posX ?? 50) + '%';
+        posXLabel.className = 'ppt-pos-label';
+        posXLabel.dataset.id = p.id; posXLabel.dataset.axis = 'x';
+        posFieldX.appendChild(posXLabel);
+        const posXSlider = document.createElement('input');
+        posXSlider.type = 'range'; posXSlider.className = 'ppt-slider ppt-pos-slider';
+        posXSlider.min = '0'; posXSlider.max = '100'; posXSlider.value = p.posX ?? 50;
+        posXSlider.dataset.id = p.id; posXSlider.dataset.axis = 'x';
+        posFieldX.appendChild(posXSlider);
+        rowFit.appendChild(posFieldX);
+        const posFieldY = document.createElement('div');
+        posFieldY.className = 'ppt-field';
+        posFieldY.style.flex = '1';
+        const posYLabel = document.createElement('label'); posYLabel.textContent = 'Y ' + (p.posY ?? 50) + '%';
+        posYLabel.className = 'ppt-pos-label';
+        posYLabel.dataset.id = p.id; posYLabel.dataset.axis = 'y';
+        posFieldY.appendChild(posYLabel);
+        const posYSlider = document.createElement('input');
+        posYSlider.type = 'range'; posYSlider.className = 'ppt-slider ppt-pos-slider';
+        posYSlider.min = '0'; posYSlider.max = '100'; posYSlider.value = p.posY ?? 50;
+        posYSlider.dataset.id = p.id; posYSlider.dataset.axis = 'y';
+        posFieldY.appendChild(posYSlider);
+        rowFit.appendChild(posFieldY);
+      }
+      meta.appendChild(rowFit);
+      const row2 = document.createElement('div');
+      row2.className = 'ppt-row2';
+      const fb = document.createElement('button');
+      fb.className = 'ppt-mini-btn fillPageBtn'; fb.dataset.id = p.id;
+      fb.title = 'Auto-fill one page'; fb.textContent = 'Fill Page';
+      row2.appendChild(fb);
+      const rotInfo = document.createElement('span');
+      rotInfo.className = 'ppt-rot-info';
+      rotInfo.textContent = (p.rotation || 0) + '°';
+      row2.appendChild(rotInfo);
+      const sp = document.createElement('span'); sp.style.flex = '1'; row2.appendChild(sp);
+      const rb = document.createElement('button');
+      rb.className = 'ppt-remove'; rb.dataset.id = p.id;
+      rb.setAttribute('aria-label', 'Remove photo'); rb.textContent = '✕';
+      row2.appendChild(rb);
+      meta.appendChild(row2);
+      card.appendChild(meta);
+      frag.appendChild(card);
+    });
+    photoList.appendChild(frag);
+  }
+
+  photoList.addEventListener('click', e => {
+    const t = e.target.closest('[data-id]');
+    if (!t) return;
+    const id = parseInt(t.dataset.id);
+    if (t.classList.contains('ppt-remove')) {
+      pushUndo();
+      photos = photos.filter(x => x.id !== id);
+      if (selectedPhotoId === id) selectedPhotoId = photos.length ? photos[0].id : null;
+      revertIdCard();
+      layoutDirty = true;
+      renderAll();
+    } else if (t.classList.contains('fillPageBtn')) {
+      pushUndo();
+      const p = photos.find(x => x.id === id);
+      if (!p) return;
+      const sz = getSizeMM(p);
+      const mg = Math.max(0, parseFloat(pageMargin.value) || 0);
+      const gp = Math.max(0, parseFloat(photoGap.value) || 0);
+      const uw = PW - mg * 2, uh = PH - mg * 2;
+      const cols = Math.max(1, Math.floor((uw + gp) / (sz.w + gp)));
+      let rows = Math.max(1, Math.floor((uh + gp) / (sz.h + gp)));
+      const mr = getMaxRows();
+      if (mr) rows = Math.min(rows, mr);
+      const newCopies = Math.min(99, cols * rows);
+      // In manual mode, add positions for new copies
+      if (layoutModeType === 'manual' && newCopies > p.copies) {
+        for (let i = p.copies; i < newCopies; i++) {
+          const key = p.id + '-' + i;
+          const col = i % cols;
+          const row = Math.floor(i / cols);
+          copyPositions[key] = { x: mg + col * (sz.w + gp), y: mg + row * (sz.h + gp) };
+        }
+      }
+      p.copies = newCopies;
+      layoutDirty = true;
+      renderAll();
+      toast(p.copies + ' copies set — fills one page.');
+    } else {
+      selectedPhotoId = id;
+      updateStraightenSlider();
+      renderPhotoList();
+    }
+  });
+
+  photoList.addEventListener('click', e => {
+    const fitBtn = e.target.closest('.ppt-fit-btn');
+    if (fitBtn) {
+      const toggle = fitBtn.closest('.ppt-fit-toggle');
+      const id = parseInt(toggle.dataset.id);
+      const p = photos.find(x => x.id === id);
+      if (!p) return;
+      pushUndo();
+      p.fitMode = fitBtn.dataset.mode;
+      layoutDirty = true;
+      renderAll();
+      return;
+    }
+  });
+
+  photoList.addEventListener('change', e => {
+    const t = e.target, id = parseInt(t.dataset.id);
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    if (t.classList.contains('sizeSelect')) {
+      pushUndo();
+      p.sizeKey = t.value;
+      if (t.value === ID_CARD_KEY) {
+        if (!idCardActive) {
+          savedSettings = { margin: pageMargin.value, gap: photoGap.value, layoutMode: layoutMode.value, maxRows: maxRowsInput.value };
+          idCardActive = true;
+        }
+        pageMargin.value = ID_CARD_SETTINGS.margin;
+        photoGap.value = ID_CARD_SETTINGS.gap;
+        layoutMode.value = ID_CARD_SETTINGS.layoutMode;
+        maxRowsInput.value = ID_CARD_SETTINGS.maxRows;
+        maxRowsField.style.display = '';
+        toast('ID Card layout applied — 30mm margin, 30mm gap, 2 rows/page.');
+      }
+      revertIdCard();
+      layoutDirty = true;
+      renderAll();
+    }
+  });
+
+  photoList.addEventListener('input', e => {
+    const t = e.target, id = parseInt(t.dataset.id);
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    if (t.classList.contains('copiesInput')) {
+      const nv = Math.min(99, Math.max(1, parseInt(t.value) || 1));
+      if (p.copies !== nv) {
+        pushUndo();
+        // In manual mode, add positions for new copies
+        if (layoutModeType === 'manual' && nv > p.copies) {
+          for (let i = p.copies; i < nv; i++) {
+            const key = p.id + '-' + i;
+            copyPositions[key] = { x: nextPlaceX, y: nextPlaceY };
+            nextPlaceX += 40;
+            if (nextPlaceX > PW - 40) { nextPlaceX = 20; nextPlaceY += 55; }
+            if (nextPlaceY > PH - 50) { nextPlaceY = 20; }
+          }
+        }
+        p.copies = nv;
+      }
+    } else if (t.classList.contains('customW')) {
+      const nv = Math.max(5, parseFloat(t.value) || 35) * 10;
+      if (p.customW !== nv) { pushUndo(); p.customW = nv; }
+    } else if (t.classList.contains('customH')) {
+      const nv = Math.max(5, parseFloat(t.value) || 45) * 10;
+      if (p.customH !== nv) { pushUndo(); p.customH = nv; }
+    } else if (t.classList.contains('ppt-pos-slider')) {
+      const axis = t.dataset.axis;
+      const nv = Math.max(0, Math.min(100, parseInt(t.value) || 50));
+      if (axis === 'x' && p.posX !== nv) { pushUndo(); p.posX = nv; }
+      else if (axis === 'y' && p.posY !== nv) { pushUndo(); p.posY = nv; }
+      // Update label
+      const label = t.parentElement.querySelector('.ppt-pos-label');
+      if (label) label.textContent = (axis.toUpperCase()) + ' ' + nv + '%';
+    } else return;
+    layoutDirty = true;
+    renderPreview();
+    renderStats();
+  });
+
+  function revertIdCard() {
+    if (idCardActive && !photos.some(p => p.sizeKey === ID_CARD_KEY)) {
+      if (savedSettings) {
+        pageMargin.value = savedSettings.margin;
+        photoGap.value = savedSettings.gap;
+        layoutMode.value = savedSettings.layoutMode;
+        maxRowsInput.value = savedSettings.maxRows;
+        maxRowsField.style.display = savedSettings.layoutMode === 'rows' ? '' : 'none';
+      }
+      idCardActive = false;
+      savedSettings = null;
+      toast('ID Card removed — previous settings restored.');
+    }
+  }
+
+  function renderPreview() {
+    const { pages, margin, gap, maxRows } = getLayout();
+    previewArea.innerHTML = '';
+    if (!photos.length || !pages.length) {
+      previewArea.appendChild(noPhotosMsg);
+      return;
+    }
+    const printArea = document.createElement('div');
+    printArea.className = 'print-area';
+    pages.forEach((page, pi) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'ppt-page-wrap';
+      const label = document.createElement('div');
+      label.className = 'ppt-page-label';
+      const mt = maxRows ? ' · ' + maxRows + ' rows/page' : '';
+      label.innerHTML = 'A4 · Page <b>' + (pi + 1) + '</b> of <b>' + pages.length + '</b>' + mt;
+      const scaleBox = document.createElement('div');
+      scaleBox.className = 'ppt-scale-box';
+      const a4 = document.createElement('div');
+      a4.className = 'ppt-a4' + (layoutModeType === 'manual' ? ' ppt-manual' : '');
+      a4.style.padding = margin + 'mm';
+      a4.style.gap = layoutModeType === 'auto' ? gap + 'mm' : '0';
+      if (guidesVisible) {
+        ['ppt-crop-tl','ppt-crop-tr','ppt-crop-bl','ppt-crop-br'].forEach(cls => {
+          const c = document.createElement('div'); c.className = 'ppt-crop ' + cls; a4.appendChild(c);
+        });
+      }
+      page.forEach(row => row.items.forEach(item => {
+        const slot = document.createElement('div');
+        slot.className = 'ppt-slot';
+        slot.style.width = item.w + 'mm';
+        slot.style.height = item.h + 'mm';
+        if (layoutModeType === 'manual') {
+          slot.style.left = item.x + 'mm';
+          slot.style.top = item.y + 'mm';
+          if (item.copyKey) slot.dataset.copyKey = item.copyKey;
+        }
+        const img = document.createElement('img'); img.src = item.src; img.alt = 'Print copy';
+        // Apply fit mode
+        img.style.objectFit = item.fitMode || 'cover';
+        if (item.fitMode === 'cover') {
+          img.style.objectPosition = (item.posX ?? 50) + '% ' + (item.posY ?? 50) + '%';
+        }
+        // Rotation is baked into src via canvas; straighten uses CSS with scale补偿
+        if (item.straighten) {
+          const sf = 1 + Math.abs(item.straighten) / 45 * 0.3;
+          img.style.transform = 'rotate(' + item.straighten + 'deg) scale(' + sf + ')';
+        }
+        slot.appendChild(img);
+        if (guidesVisible) {
+          const cut = document.createElement('div'); cut.className = 'ppt-cut'; slot.appendChild(cut);
+        }
+        const dims = document.createElement('div'); dims.className = 'ppt-dims';
+        dims.textContent = item.w.toFixed(1) + '×' + item.h.toFixed(1) + 'mm';
+        slot.appendChild(dims);
+        a4.appendChild(slot);
+      }));
+      scaleBox.appendChild(a4);
+      wrap.appendChild(label);
+      wrap.appendChild(scaleBox);
+      printArea.appendChild(wrap);
+    });
+    previewArea.appendChild(printArea);
+    scalePages();
+    updateDimensions();
+  }
+
+  function scalePages() {
+    const boxes = previewArea.querySelectorAll('.ppt-scale-box');
+    const avail = previewArea.clientWidth - 48;
+    if (avail <= 0) return;
+    const s = (avail * zoomLevel / 100) / PW_PX;
+    boxes.forEach(box => {
+      const a4 = box.querySelector('.ppt-a4');
+      box.style.width = (PW_PX * s) + 'px';
+      box.style.height = (PH_PX * s) + 'px';
+      a4.style.transform = 'scale(' + s + ')';
+    });
+  }
+
+  function updateDimensions() {
+    const dimText = photos.length ? PW + ' × ' + PH + ' mm' : '—';
+    if (previewDimensions) previewDimensions.textContent = dimText;
+    if (previewDimensions2) previewDimensions2.textContent = dimText;
+  }
+
+  function renderStats() {
+    const { pages } = getLayout();
+    statPrints.textContent = photos.reduce((s, p) => s + p.copies, 0);
+    statPages.textContent = pages.length;
+  }
+
+  function renderAll() {
+    renderPhotoList();
+    renderPreview();
+    renderStats();
+    updateUndoRedoButtons();
+  }
+
+  // ── Straighten ──
+  function updateStraightenSlider() {
+    const p = photos.find(x => x.id === selectedPhotoId);
+    if (p) { straightenSlider.value = p.straighten || 0; straightenVal.textContent = (p.straighten || 0) + '°'; }
+    else { straightenSlider.value = 0; straightenVal.textContent = '0°'; }
+  }
+  straightenSlider.addEventListener('input', () => {
+    const val = parseInt(straightenSlider.value);
+    straightenVal.textContent = val + '°';
+    if (selectedPhotoId !== null) {
+      const p = photos.find(x => x.id === selectedPhotoId);
+      if (p && (p.straighten || 0) !== val) { pushUndo(); p.straighten = val; layoutDirty = true; renderPreview(); }
+    }
+  });
+
+  // ── Zoom ──
+  $('zoomInBtn').addEventListener('click', () => { zoomLevel = Math.min(300, zoomLevel + 10); updateZoom(); });
+  $('zoomOutBtn').addEventListener('click', () => { zoomLevel = Math.max(10, zoomLevel - 10); updateZoom(); });
+  $('fitBtn').addEventListener('click', () => { zoomLevel = 100; updateZoom(); });
+  zoomSlider.addEventListener('input', () => { zoomLevel = parseInt(zoomSlider.value); updateZoom(); });
+  function updateZoom() {
+    zoomLabel.textContent = zoomLevel + '%';
+    zoomSlider.value = zoomLevel;
+    zoomSliderVal.textContent = zoomLevel + '%';
+    scalePages();
+  }
+
+  // ── Layout Mode Toggle (Auto-fill / Manual) ──
+  function updateLayoutToggle() {
+    document.querySelectorAll('.ppt-layout-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === layoutModeType);
+    });
+  }
+  document.querySelectorAll('.ppt-layout-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const newMode = btn.dataset.mode;
+      if (newMode === layoutModeType) return;
+      pushUndo();
+      if (newMode === 'manual') {
+        // Snapshot current auto positions as starting point
+        const { pages } = getLayout();
+        let copyIdx = 0;
+        photos.forEach(p => {
+          const s = getSizeMM(p);
+          for (let i = 0; i < p.copies; i++) {
+            const key = p.id + '-' + i;
+            // Find this item in auto layout to get its position
+            let found = null;
+            for (const page of pages) {
+              for (const row of page) {
+                for (const item of row.items) {
+                  if (item.copyKey === key || (!item.copyKey && copyIdx === copyIdx)) {
+                    found = item; break;
+                  }
+                }
+                if (found) break;
+              }
+              if (found) break;
+            }
+            if (found && !copyPositions[key]) {
+              copyPositions[key] = { x: found.x, y: found.y };
+            } else if (!copyPositions[key]) {
+              copyPositions[key] = { x: nextPlaceX, y: nextPlaceY };
+            }
+            copyIdx++;
+          }
+        });
+        // Cascade next position
+        nextPlaceX = 20; nextPlaceY += 30;
+        if (nextPlaceY > PH - 20) { nextPlaceX += 40; nextPlaceY = 20; }
+      }
+      layoutModeType = newMode;
+      updateLayoutToggle();
+      layoutDirty = true;
+      renderAll();
+    });
+  });
+
+  // ── Drag system for Manual mode ──
+  let dragState = null;
+  function initDrag() {
+    previewArea.addEventListener('pointerdown', e => {
+      if (layoutModeType !== 'manual') return;
+      const slot = e.target.closest('.ppt-slot');
+      if (!slot) return;
+      e.preventDefault();
+      const copyKey = slot.dataset.copyKey;
+      if (!copyKey) return;
+      const a4 = slot.closest('.ppt-a4');
+      const scaleBox = a4.closest('.ppt-scale-box');
+      const slotRect = slot.getBoundingClientRect();
+      dragState = {
+        copyKey, slot, a4, scaleBox,
+        startMouseX: e.clientX, startMouseY: e.clientY,
+        startSlotX: parseFloat(slot.style.left) || 0,
+        startSlotY: parseFloat(slot.style.top) || 0,
+        mmPerPx: PW / (PW_PX * (parseFloat(scaleBox.style.width) || PW_PX) / PW_PX)
+      };
+      slot.classList.add('ppt-dragging');
+      slot.setPointerCapture(e.pointerId);
+    });
+    previewArea.addEventListener('pointermove', e => {
+      if (!dragState) return;
+      e.preventDefault();
+      const dx = e.clientX - dragState.startMouseX;
+      const dy = e.clientY - dragState.startMouseY;
+      const a4Rect = dragState.scaleBox.getBoundingClientRect();
+      const scaleX = PW_PX / a4Rect.width;
+      const scaleY = PH_PX / a4Rect.height;
+      let newX = dragState.startSlotX + dx * scaleX;
+      let newY = dragState.startSlotY + dy * scaleY;
+      // Constrain within page
+      const parts = dragState.copyKey.split('-');
+      const pid = parseInt(parts[0]);
+      const cidx = parseInt(parts[1]);
+      const p = photos.find(x => x.id === pid);
+      if (p) {
+        const s = getSizeMM(p);
+        newX = Math.max(0, Math.min(PW - s.w, newX));
+        newY = Math.max(0, Math.min(PH - s.h, newY));
+      }
+      dragState.slot.style.left = newX + 'mm';
+      dragState.slot.style.top = newY + 'mm';
+      // Overlap detection
+      checkOverlap(dragState.slot, newX, newY);
+    });
+    previewArea.addEventListener('pointerup', e => {
+      if (!dragState) return;
+      e.preventDefault();
+      const slot = dragState.slot;
+      slot.classList.remove('ppt-dragging');
+      slot.releasePointerCapture(e.pointerId);
+      // Commit position
+      const newX = parseFloat(slot.style.left) || 0;
+      const newY = parseFloat(slot.style.top) || 0;
+      const oldPos = copyPositions[dragState.copyKey];
+      if (!oldPos || Math.abs(oldPos.x - newX) > 0.1 || Math.abs(oldPos.y - newY) > 0.1) {
+        pushUndo();
+        copyPositions[dragState.copyKey] = { x: newX, y: newY };
+        // Clear overlap warnings
+        slot.classList.remove('ppt-overlap');
+        document.querySelectorAll('.ppt-slot.ppt-overlap').forEach(s => s.classList.remove('ppt-overlap'));
+      }
+      dragState = null;
+    });
+  }
+  function checkOverlap(dragSlot, dx, dy) {
+    const dw = parseFloat(dragSlot.style.width) || 0;
+    const dh = parseFloat(dragSlot.style.height) || 0;
+    let hasOverlap = false;
+    document.querySelectorAll('.ppt-a4 .ppt-slot').forEach(s => {
+      if (s === dragSlot) return;
+      const sx = parseFloat(s.style.left) || 0;
+      const sy = parseFloat(s.style.top) || 0;
+      const sw = parseFloat(s.style.width) || 0;
+      const sh = parseFloat(s.style.height) || 0;
+      if (dx < sx + sw && dx + dw > sx && dy < sy + sh && dy + dh > sy) {
+        hasOverlap = true;
+      }
+    });
+    dragSlot.classList.toggle('ppt-overlap', hasOverlap);
+  }
+  initDrag();
+
+  // ── Undo / Redo / Reset ──
+  $('undoBtn').addEventListener('click', undo);
+  $('redoBtn').addEventListener('click', redo);
+  $('resetBtn').addEventListener('click', () => {
+    if (!photos.length) return;
+    if (confirm('Reset all photos to defaults?')) {
+      pushUndo();
+      photos.forEach(p => {
+        p.sizeKey = 'passport'; p.customW = 35; p.customH = 45; p.copies = 1;
+        p.rotation = 0; p.straighten = 0; p.fitMode = 'cover'; p.posX = 50; p.posY = 50;
+        p.src = p.originalSrc;
+      });
+      pageMargin.value = '5'; photoGap.value = '2'; layoutMode.value = 'auto'; maxRowsInput.value = '2';
+      maxRowsField.style.display = 'none';
+      layoutModeType = 'auto'; copyPositions = {}; nextPlaceX = 20; nextPlaceY = 20;
+      updateLayoutToggle();
+      selectedPhotoId = photos.length ? photos[0].id : null;
+      idCardActive = false; savedSettings = null;
+      updateStraightenSlider();
+      layoutDirty = true; renderAll();
+      toast('All photos reset.');
+    }
+  });
+
+  // ── Rotate ──
+  function rotateSelected(dir) {
+    if (selectedPhotoId === null) { toast('Select a photo first.'); return; }
+    const p = photos.find(x => x.id === selectedPhotoId);
+    if (!p) return;
+    pushUndo();
+    const newRotation = ((p.rotation || 0) + (dir === 'left' ? -90 : 90) + 360) % 360;
+    p.rotation = newRotation;
+    // Pre-rotate image data via canvas so preview/export uses correct pixels
+    rotateImageSrc(p.originalSrc, newRotation).then(rotatedSrc => {
+      p.src = rotatedSrc;
+      layoutDirty = true;
+      renderAll();
+      toast('Rotated ' + dir + ' (' + newRotation + '\u00B0)');
+    });
+  }
+  $('rotateLeftBtn').addEventListener('click', () => rotateSelected('left'));
+  $('rotateRightBtn').addEventListener('click', () => rotateSelected('right'));
+
+  // ── Compare ──
+  $('compareBtn').addEventListener('click', () => {
+    compareMode = !compareMode;
+    $('compareBtn').classList.toggle('active', compareMode);
+    previewArea.classList.toggle('ppt-compare-mode', compareMode);
+    toast(compareMode ? 'Compare: clean view' : 'Compare off');
+  });
+
+  // ── Hide guides ──
+  hideGuidesBtn.addEventListener('click', () => {
+    guidesVisible = !guidesVisible;
+    hideGuidesBtn.classList.toggle('active', !guidesVisible);
+    hideGuidesBtn.innerHTML = guidesVisible
+      ? '<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke="currentColor" stroke-width="1.6"/></svg> Hide guides'
+      : '<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke="currentColor" stroke-width="1.6"/></svg> Show guides';
+    layoutDirty = true; renderPreview();
+    toast(guidesVisible ? 'Guides shown' : 'Guides hidden');
+  });
+
+  // ── Full screen ──
+  $('fullScreenBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+    else document.exitFullscreen();
+  });
+
+  // ── Tabs ──
+  function switchTab(tab) {
+    document.querySelectorAll('.ppt-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.ppt-tab-panel').forEach(p => p.classList.remove('active'));
+    const btn = document.querySelector('.ppt-tab-btn[data-tab="' + tab + '"]');
+    if (btn) btn.classList.add('active');
+    if (tab === 'settings') $('tabSettings').classList.add('active');
+    else if (tab === 'preview') $('tabPreview').classList.add('active');
+    else if (tab === 'quick') $('tabQuick').classList.add('active');
+  }
+  document.querySelectorAll('.ppt-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // ── Size preset (toolbar) ──
+  $('sizePresetSelect').addEventListener('change', e => {
+    if (!photos.length) return;
+    pushUndo();
+    photos.forEach(p => { p.sizeKey = e.target.value; });
+    layoutDirty = true; renderAll();
+    toast('Size changed: ' + (SIZE_PRESETS[e.target.value] || {}).label);
+  });
+
+  // ── Quick Actions ──
+  $('changePhotoBtn').addEventListener('click', () => { fileInput.click(); });
+  $('autofixBtn').addEventListener('click', () => {
+    if (!photos.length) { toast('No photos to auto-fix.'); return; }
+    pushUndo();
+    photos.forEach(p => { p.straighten = 0; p.rotation = 0; p.fitMode = 'cover'; p.posX = 50; p.posY = 50; p.src = p.originalSrc; });
+    layoutModeType = 'auto'; copyPositions = {}; nextPlaceX = 20; nextPlaceY = 20;
+    updateLayoutToggle();
+    selectedPhotoId = photos.length ? photos[0].id : null;
+    updateStraightenSlider(); layoutDirty = true; renderAll();
+    toast('Auto-fix: rotation & straighten reset.');
+  });
+  $('checkPhotoBtn').addEventListener('click', () => {
+    if (!photos.length) { toast('No photos loaded.'); return; }
+    const total = photos.reduce((s, p) => s + p.copies, 0);
+    const { pages } = getLayout();
+    toast(photos.length + ' photo' + (photos.length !== 1 ? 's' : '') + ' \u00B7 ' + total + ' prints \u00B7 ' + pages.length + ' page' + (pages.length !== 1 ? 's' : ''));
+  });
+
+  // ── Header buttons ──
+  $('supportBtn').addEventListener('click', () => { toast('Thanks for your support!'); });
+  $('whatsNewBtn').addEventListener('click', () => { toast('Latest: Undo/Redo, Rotate, Compare, Size presets!'); });
+
+  // ── Bottom bar ──
+  $('previewBtn').addEventListener('click', () => { switchTab('preview'); });
+  $('printBtnBottom').addEventListener('click', () => window.print());
+
+  // ── Download as PNG ──
+  function downloadLayout() {
+    if (!photos.length) { toast('No photos to download.'); return; }
+    toast('Rendering…');
+    const { pages, margin } = getLayout();
+    const SCALE = 300 / 96;
+    const a4W = Math.round(PW * SCALE);
+    const a4H = Math.round(PH * SCALE);
+    const mgPx = Math.round(margin * SCALE);
+    const gapMm = Math.max(0, parseFloat(photoGap.value) || 0);
+    const gapPx = Math.round(gapMm * SCALE);
+
+    let pageIndex = 0;
+    function renderPage(pageData) {
+      return new Promise(resolve => {
+        const canvas = document.createElement('canvas');
+        canvas.width = a4W; canvas.height = a4H;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, a4W, a4H);
+
+        let x = mgPx, y = mgPx;
+        let rowH = 0;
+        let imagesLoaded = 0;
+        const totalImages = pageData.reduce((s, row) => s + row.items.length, 0);
+
+        if (totalImages === 0) { resolve(canvas); return; }
+
+        pageData.forEach(row => {
+          let rx = x;
+          row.items.forEach(item => {
+            const iw = Math.round(item.w * SCALE);
+            const ih = Math.round(item.h * SCALE);
+            // Use absolute position in manual mode, row-flow in auto mode
+            const drawX = (layoutModeType === 'manual' && item.x != null) ? Math.round(item.x * SCALE) : rx;
+            const drawY = (layoutModeType === 'manual' && item.y != null) ? Math.round(item.y * SCALE) : y;
+            const img = new Image();
+            img.onload = () => {
+              const angle = item.straighten || 0;
+              const drawFn = item.fitMode === 'contain' ? drawImageContain : drawImageCover;
+              if (angle) {
+                ctx.save();
+                ctx.translate(drawX + iw / 2, drawY + ih / 2);
+                ctx.rotate(angle * Math.PI / 180);
+                const sf = 1 + Math.abs(angle) / 45 * 0.3;
+                ctx.scale(sf, sf);
+                drawFn(ctx, img, -iw / 2, -ih / 2, iw, ih, item.posX, item.posY);
+                ctx.restore();
+              } else {
+                drawFn(ctx, img, drawX, drawY, iw, ih, item.posX, item.posY);
+              }
+              imagesLoaded++;
+              if (imagesLoaded >= totalImages) resolve(canvas);
+            };
+            img.onerror = () => {
+              ctx.fillStyle = '#eee';
+              ctx.fillRect(drawX, drawY, iw, ih);
+              imagesLoaded++;
+              if (imagesLoaded >= totalImages) resolve(canvas);
+            };
+            img.src = item.src;
+            rx += iw + gapPx;
+            rowH = Math.max(rowH, ih);
+          });
+          y += rowH + gapPx;
+          rowH = 0;
+        });
+
+        if (totalImages === 0) resolve(canvas);
+      });
+    }
+
+    // Object-fit: cover — draws image cropped to fill target box, position-controlled
+    function drawImageCover(ctx, img, dx, dy, dw, dh, posX, posY) {
+      const srcW = img.naturalWidth, srcH = img.naturalHeight;
+      const srcAR = srcW / srcH, dstAR = dw / dh;
+      let sx, sy, sw, sh;
+      const px = (posX ?? 50) / 100;
+      const py = (posY ?? 50) / 100;
+      if (srcAR > dstAR) {
+        sh = srcH; sw = srcH * dstAR;
+        sx = (srcW - sw) * px; sy = 0;
+      } else {
+        sw = srcW; sh = srcW / dstAR;
+        sx = 0; sy = (srcH - sh) * py;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+    }
+
+    // Object-fit: contain — draws image fully visible, centered, white letterbox
+    function drawImageContain(ctx, img, dx, dy, dw, dh) {
+      const srcW = img.naturalWidth, srcH = img.naturalHeight;
+      const srcAR = srcW / srcH, dstAR = dw / dh;
+      let drawW, drawH;
+      if (srcAR > dstAR) {
+        drawW = dw; drawH = dw / srcAR;
+      } else {
+        drawH = dh; drawW = dh * srcAR;
+      }
+      const ox = dx + (dw - drawW) / 2;
+      const oy = dy + (dh - drawH) / 2;
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(dx, dy, dw, dh);
+      ctx.drawImage(img, ox, oy, drawW, drawH);
+    }
+
+    (async () => {
+      for (const pageData of pages) {
+        const canvas = await renderPage(pageData);
+        const link = document.createElement('a');
+        link.download = 'photo-print-page-' + (++pageIndex) + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }
+      toast('Downloaded ' + pages.length + ' page' + (pages.length !== 1 ? 's' : '') + '.');
+    })();
+  }
+  $('downloadBtn').addEventListener('click', downloadLayout);
+  $('downloadBtnBottom').addEventListener('click', downloadLayout);
+
+  // ── WhatsApp ──
+  $('shareWhatsAppBtn').addEventListener('click', () => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('Check out this free Photo Print Tool \u2014 arrange passport photos on A4 pages!');
+    window.open('https://wa.me/?text=' + text + '%20' + url, '_blank');
+  });
+
+  // ── Controls ──
+  pageMargin.addEventListener('input', () => { layoutDirty = true; renderPreview(); renderStats(); });
+  photoGap.addEventListener('input', () => { layoutDirty = true; renderPreview(); renderStats(); });
+  layoutMode.addEventListener('change', () => {
+    maxRowsField.style.display = layoutMode.value === 'rows' ? '' : 'none';
+    layoutDirty = true; renderPreview(); renderStats();
+  });
+  maxRowsInput.addEventListener('input', () => { layoutDirty = true; renderPreview(); renderStats(); });
+
+  // ── Controls toggle ──
+  $('controlsToggle').addEventListener('click', () => {
+    const panel = $('controlsPanel');
+    const btn = $('controlsToggle');
+    panel.classList.toggle('ppt-controls-hidden');
+    btn.classList.toggle('active');
+    btn.innerHTML = panel.classList.contains('ppt-controls-hidden')
+      ? '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Settings'
+      : '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Hide';
+  });
+
+  // ── Clear All ──
+  $('clearBtn').addEventListener('click', () => {
+    if (!photos.length) return;
+    if (confirm('Remove all photos? This can be undone with Ctrl+Z.')) {
+      pushUndo();
+      photos = []; selectedPhotoId = null;
+      revertIdCard(); layoutDirty = true; renderAll();
+      toast('All photos cleared. Use Undo to restore.');
+    }
+  });
+
+  updateUndoRedoButtons();
+  renderAll();
+})();
+</script>
