@@ -111,7 +111,7 @@
       </div>
 
       <div class="ppt-sidebar-mid">
-        <div class="ppt-eyebrow">Photos (<span id="photoCount">0</span>)</div>
+        <div class="ppt-eyebrow">Photos · <span id="photoCount">0</span></div>
         <div class="ppt-photolist" id="photoList">
           <div class="ppt-empty" id="emptyHint">No photos added yet.<br>Upload using the box above.</div>
         </div>
@@ -588,129 +588,186 @@
     emptyHint.style.display = 'none';
     const frag = document.createDocumentFragment();
     photos.forEach(p => {
+      const isSelected = p.id === selectedPhotoId;
       const card = document.createElement('div');
-      card.className = 'ppt-card' + (p.id === selectedPhotoId ? ' ppt-card-selected' : '');
+      card.className = 'ppt-card' + (isSelected ? ' ppt-card-selected' : '');
       card.dataset.id = p.id;
       const img = document.createElement('img');
       img.src = p.src; img.alt = 'Uploaded photo for ' + p.name; img.loading = 'lazy';
       card.appendChild(img);
       const meta = document.createElement('div');
       meta.className = 'ppt-meta';
-      const row1 = document.createElement('div');
-      row1.className = 'ppt-row';
-      const sizeField = document.createElement('div');
-      sizeField.className = 'ppt-field';
-      sizeField.style.flex = '1.4';
-      const sl = document.createElement('label'); sl.textContent = 'Size'; sizeField.appendChild(sl);
-      const sel = document.createElement('select');
-      sel.className = 'sizeSelect'; sel.dataset.id = p.id;
-      Object.entries(SIZE_GROUPS).forEach(([gl, opts]) => {
-        const og = document.createElement('optgroup'); og.label = gl;
-        Object.entries(opts).forEach(([k, v]) => {
-          const o = document.createElement('option'); o.value = k; o.textContent = v.label;
-          if (p.sizeKey === k) o.selected = true;
-          og.appendChild(o);
+
+      if (!isSelected) {
+        // ── Compact summary row ──
+        const summary = document.createElement('div');
+        summary.className = 'ppt-card-summary';
+        const summaryInfo = document.createElement('div');
+        summaryInfo.className = 'ppt-summary-info';
+        const sizeName = document.createElement('span');
+        sizeName.className = 'ppt-summary-size';
+        const preset = SIZE_PRESETS[p.sizeKey];
+        sizeName.textContent = preset ? preset.label.split(' (')[0] : 'Custom';
+        summaryInfo.appendChild(sizeName);
+        const copiesBadge = document.createElement('span');
+        copiesBadge.className = 'ppt-summary-copies';
+        copiesBadge.textContent = '\u00d7' + p.copies;
+        summaryInfo.appendChild(copiesBadge);
+        summary.appendChild(summaryInfo);
+        const expandBtn = document.createElement('button');
+        expandBtn.className = 'ppt-expand-btn';
+        expandBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" width="10" height="10"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        expandBtn.setAttribute('aria-label', 'Expand photo settings');
+        summary.appendChild(expandBtn);
+        meta.appendChild(summary);
+      } else {
+        // ── Expanded card (selected) ──
+        // Group 1: Size + Copies
+        const group1 = document.createElement('div');
+        group1.className = 'ppt-card-group';
+        const row1 = document.createElement('div');
+        row1.className = 'ppt-row';
+        const sizeField = document.createElement('div');
+        sizeField.className = 'ppt-field';
+        sizeField.style.flex = '1.4';
+        const sl = document.createElement('label'); sl.textContent = 'Size'; sizeField.appendChild(sl);
+        const sel = document.createElement('select');
+        sel.className = 'sizeSelect'; sel.dataset.id = p.id;
+        Object.entries(SIZE_GROUPS).forEach(([gl, opts]) => {
+          const og = document.createElement('optgroup'); og.label = gl;
+          Object.entries(opts).forEach(([k, v]) => {
+            const o = document.createElement('option'); o.value = k; o.textContent = v.label;
+            if (p.sizeKey === k) o.selected = true;
+            og.appendChild(o);
+          });
+          sel.appendChild(og);
         });
-        sel.appendChild(og);
-      });
-      sizeField.appendChild(sel);
-      row1.appendChild(sizeField);
-      const cpField = document.createElement('div');
-      cpField.className = 'ppt-field';
-      cpField.style.flex = '.8';
-      const cl = document.createElement('label'); cl.textContent = 'Copies'; cpField.appendChild(cl);
-      const ci = document.createElement('input');
-      ci.type = 'number'; ci.className = 'copiesInput'; ci.dataset.id = p.id;
-      ci.value = p.copies; ci.min = '1'; ci.max = '99';
-      cpField.appendChild(ci);
-      row1.appendChild(cpField);
-      meta.appendChild(row1);
-      if (p.sizeKey === 'custom') {
-        const rc = document.createElement('div'); rc.className = 'ppt-row';
-        const wf = document.createElement('div'); wf.className = 'ppt-field';
-        const wl = document.createElement('label'); wl.textContent = 'W (cm)'; wf.appendChild(wl);
-        const wi = document.createElement('input'); wi.type = 'number'; wi.className = 'customW'; wi.dataset.id = p.id;
-        wi.value = (p.customW / 10).toFixed(1); wi.step = '0.1'; wi.min = '0.5';
-        wf.appendChild(wi); rc.appendChild(wf);
-        const hf = document.createElement('div'); hf.className = 'ppt-field';
-        const hl = document.createElement('label'); hl.textContent = 'H (cm)'; hf.appendChild(hl);
-        const hi = document.createElement('input'); hi.type = 'number'; hi.className = 'customH'; hi.dataset.id = p.id;
-        hi.value = (p.customH / 10).toFixed(1); hi.step = '0.1'; hi.min = '0.5';
-        hf.appendChild(hi); rc.appendChild(hf);
-        meta.appendChild(rc);
+        sizeField.appendChild(sel);
+        row1.appendChild(sizeField);
+        const cpField = document.createElement('div');
+        cpField.className = 'ppt-field';
+        cpField.style.flex = '.8';
+        const cl = document.createElement('label'); cl.textContent = 'Copies'; cpField.appendChild(cl);
+        const ci = document.createElement('input');
+        ci.type = 'number'; ci.className = 'copiesInput'; ci.dataset.id = p.id;
+        ci.value = p.copies; ci.min = '1'; ci.max = '99';
+        cpField.appendChild(ci);
+        row1.appendChild(cpField);
+        group1.appendChild(row1);
+        if (p.sizeKey === 'custom') {
+          const rc = document.createElement('div'); rc.className = 'ppt-row';
+          const wf = document.createElement('div'); wf.className = 'ppt-field';
+          const wl = document.createElement('label'); wl.textContent = 'W (cm)'; wf.appendChild(wl);
+          const wi = document.createElement('input'); wi.type = 'number'; wi.className = 'customW'; wi.dataset.id = p.id;
+          wi.value = (p.customW / 10).toFixed(1); wi.step = '0.1'; wi.min = '0.5';
+          wf.appendChild(wi); rc.appendChild(wf);
+          const hf = document.createElement('div'); hf.className = 'ppt-field';
+          const hl = document.createElement('label'); hl.textContent = 'H (cm)'; hf.appendChild(hl);
+          const hi = document.createElement('input'); hi.type = 'number'; hi.className = 'customH'; hi.dataset.id = p.id;
+          hi.value = (p.customH / 10).toFixed(1); hi.step = '0.1'; hi.min = '0.5';
+          hf.appendChild(hi); rc.appendChild(hf);
+          group1.appendChild(rc);
+        }
+        meta.appendChild(group1);
+        // Divider
+        const div1 = document.createElement('div');
+        div1.className = 'ppt-card-divider';
+        meta.appendChild(div1);
+        // Group 2: Fit mode + position sliders (cover only)
+        const group2 = document.createElement('div');
+        group2.className = 'ppt-card-group';
+        const rowFit = document.createElement('div');
+        rowFit.className = 'ppt-row';
+        rowFit.style.alignItems = 'flex-end';
+        const fitField = document.createElement('div');
+        fitField.className = 'ppt-field';
+        fitField.style.flex = '1';
+        const fitLabel = document.createElement('label'); fitLabel.textContent = 'Fit';
+        fitField.appendChild(fitLabel);
+        const fitToggle = document.createElement('div');
+        fitToggle.className = 'ppt-fit-toggle';
+        fitToggle.dataset.id = p.id;
+        const coverBtn = document.createElement('button');
+        coverBtn.className = 'ppt-fit-btn' + (p.fitMode !== 'contain' ? ' active' : '');
+        coverBtn.dataset.mode = 'cover'; coverBtn.textContent = 'Cover';
+        const containBtn = document.createElement('button');
+        containBtn.className = 'ppt-fit-btn' + (p.fitMode === 'contain' ? ' active' : '');
+        containBtn.dataset.mode = 'contain'; containBtn.textContent = 'Fit';
+        fitToggle.appendChild(coverBtn);
+        fitToggle.appendChild(containBtn);
+        fitField.appendChild(fitToggle);
+        rowFit.appendChild(fitField);
+        // Position sliders (only for cover mode)
+        if (p.fitMode !== 'contain') {
+          const posFieldX = document.createElement('div');
+          posFieldX.className = 'ppt-field';
+          posFieldX.style.flex = '1';
+          const posXLabel = document.createElement('label'); posXLabel.textContent = 'X ' + (p.posX ?? 50) + '%';
+          posXLabel.className = 'ppt-pos-label';
+          posXLabel.dataset.id = p.id; posXLabel.dataset.axis = 'x';
+          posFieldX.appendChild(posXLabel);
+          const posXSlider = document.createElement('input');
+          posXSlider.type = 'range'; posXSlider.className = 'ppt-slider ppt-pos-slider';
+          posXSlider.min = '0'; posXSlider.max = '100'; posXSlider.value = p.posX ?? 50;
+          posXSlider.dataset.id = p.id; posXSlider.dataset.axis = 'x';
+          posFieldX.appendChild(posXSlider);
+          rowFit.appendChild(posFieldX);
+          const posFieldY = document.createElement('div');
+          posFieldY.className = 'ppt-field';
+          posFieldY.style.flex = '1';
+          const posYLabel = document.createElement('label'); posYLabel.textContent = 'Y ' + (p.posY ?? 50) + '%';
+          posYLabel.className = 'ppt-pos-label';
+          posYLabel.dataset.id = p.id; posYLabel.dataset.axis = 'y';
+          posFieldY.appendChild(posYLabel);
+          const posYSlider = document.createElement('input');
+          posYSlider.type = 'range'; posYSlider.className = 'ppt-slider ppt-pos-slider';
+          posYSlider.min = '0'; posYSlider.max = '100'; posYSlider.value = p.posY ?? 50;
+          posYSlider.dataset.id = p.id; posYSlider.dataset.axis = 'y';
+          posFieldY.appendChild(posYSlider);
+          rowFit.appendChild(posFieldY);
+        }
+        group2.appendChild(rowFit);
+        meta.appendChild(group2);
+        // Divider
+        const div2 = document.createElement('div');
+        div2.className = 'ppt-card-divider';
+        meta.appendChild(div2);
+        // Group 3: Fill Page + Rotation + Delete
+        const group3 = document.createElement('div');
+        group3.className = 'ppt-card-group';
+        const row2 = document.createElement('div');
+        row2.className = 'ppt-row2';
+        const fb = document.createElement('button');
+        fb.className = 'ppt-mini-btn fillPageBtn'; fb.dataset.id = p.id;
+        fb.title = 'Auto-fill one page'; fb.textContent = 'Fill Page';
+        row2.appendChild(fb);
+        const rotInfo = document.createElement('span');
+        rotInfo.className = 'ppt-rot-info';
+        rotInfo.textContent = (p.rotation || 0) + '\u00b0';
+        row2.appendChild(rotInfo);
+        const sp = document.createElement('span'); sp.style.flex = '1'; row2.appendChild(sp);
+        const rb = document.createElement('button');
+        rb.className = 'ppt-remove'; rb.dataset.id = p.id;
+        rb.setAttribute('aria-label', 'Remove photo'); rb.textContent = '\u2715';
+        row2.appendChild(rb);
+        group3.appendChild(row2);
+        meta.appendChild(group3);
       }
-      // Fit mode + position row
-      const rowFit = document.createElement('div');
-      rowFit.className = 'ppt-row';
-      rowFit.style.alignItems = 'flex-end';
-      const fitField = document.createElement('div');
-      fitField.className = 'ppt-field';
-      fitField.style.flex = '1';
-      const fitLabel = document.createElement('label'); fitLabel.textContent = 'Fit';
-      fitField.appendChild(fitLabel);
-      const fitToggle = document.createElement('div');
-      fitToggle.className = 'ppt-fit-toggle';
-      fitToggle.dataset.id = p.id;
-      const coverBtn = document.createElement('button');
-      coverBtn.className = 'ppt-fit-btn' + (p.fitMode !== 'contain' ? ' active' : '');
-      coverBtn.dataset.mode = 'cover'; coverBtn.textContent = 'Cover';
-      const containBtn = document.createElement('button');
-      containBtn.className = 'ppt-fit-btn' + (p.fitMode === 'contain' ? ' active' : '');
-      containBtn.dataset.mode = 'contain'; containBtn.textContent = 'Fit';
-      fitToggle.appendChild(coverBtn);
-      fitToggle.appendChild(containBtn);
-      fitField.appendChild(fitToggle);
-      rowFit.appendChild(fitField);
-      // Position sliders (only for cover mode)
-      if (p.fitMode !== 'contain') {
-        const posFieldX = document.createElement('div');
-        posFieldX.className = 'ppt-field';
-        posFieldX.style.flex = '1';
-        const posXLabel = document.createElement('label'); posXLabel.textContent = 'X ' + (p.posX ?? 50) + '%';
-        posXLabel.className = 'ppt-pos-label';
-        posXLabel.dataset.id = p.id; posXLabel.dataset.axis = 'x';
-        posFieldX.appendChild(posXLabel);
-        const posXSlider = document.createElement('input');
-        posXSlider.type = 'range'; posXSlider.className = 'ppt-slider ppt-pos-slider';
-        posXSlider.min = '0'; posXSlider.max = '100'; posXSlider.value = p.posX ?? 50;
-        posXSlider.dataset.id = p.id; posXSlider.dataset.axis = 'x';
-        posFieldX.appendChild(posXSlider);
-        rowFit.appendChild(posFieldX);
-        const posFieldY = document.createElement('div');
-        posFieldY.className = 'ppt-field';
-        posFieldY.style.flex = '1';
-        const posYLabel = document.createElement('label'); posYLabel.textContent = 'Y ' + (p.posY ?? 50) + '%';
-        posYLabel.className = 'ppt-pos-label';
-        posYLabel.dataset.id = p.id; posYLabel.dataset.axis = 'y';
-        posFieldY.appendChild(posYLabel);
-        const posYSlider = document.createElement('input');
-        posYSlider.type = 'range'; posYSlider.className = 'ppt-slider ppt-pos-slider';
-        posYSlider.min = '0'; posYSlider.max = '100'; posYSlider.value = p.posY ?? 50;
-        posYSlider.dataset.id = p.id; posYSlider.dataset.axis = 'y';
-        posFieldY.appendChild(posYSlider);
-        rowFit.appendChild(posFieldY);
-      }
-      meta.appendChild(rowFit);
-      const row2 = document.createElement('div');
-      row2.className = 'ppt-row2';
-      const fb = document.createElement('button');
-      fb.className = 'ppt-mini-btn fillPageBtn'; fb.dataset.id = p.id;
-      fb.title = 'Auto-fill one page'; fb.textContent = 'Fill Page';
-      row2.appendChild(fb);
-      const rotInfo = document.createElement('span');
-      rotInfo.className = 'ppt-rot-info';
-      rotInfo.textContent = (p.rotation || 0) + '°';
-      row2.appendChild(rotInfo);
-      const sp = document.createElement('span'); sp.style.flex = '1'; row2.appendChild(sp);
-      const rb = document.createElement('button');
-      rb.className = 'ppt-remove'; rb.dataset.id = p.id;
-      rb.setAttribute('aria-label', 'Remove photo'); rb.textContent = '✕';
-      row2.appendChild(rb);
-      meta.appendChild(row2);
+
       card.appendChild(meta);
       frag.appendChild(card);
     });
     photoList.appendChild(frag);
+
+    // Auto-scroll selected card into view
+    if (selectedPhotoId !== null) {
+      const selectedCard = photoList.querySelector('.ppt-card-selected');
+      if (selectedCard) {
+        requestAnimationFrame(() => {
+          selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      }
+    }
   }
 
   photoList.addEventListener('click', e => {
@@ -1377,7 +1434,7 @@
     btn.classList.toggle('active');
     btn.innerHTML = panel.classList.contains('ppt-controls-hidden')
       ? '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Settings'
-      : '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Hide';
+      : '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Settings';
   });
 
   // ── Clear All ──
