@@ -768,6 +768,8 @@
   }
 
   photoList.addEventListener('click', e => {
+    // Skip if this was handled by the fit toggle handler above
+    if (e.target.closest('.ppt-fit-btn')) return;
     const t = e.target.closest('[data-id]');
     if (!t) return;
     const id = parseInt(t.dataset.id);
@@ -791,7 +793,6 @@
       const mr = getMaxRows();
       if (mr) rows = Math.min(rows, mr);
       const newCopies = Math.min(99, cols * rows);
-      // In manual mode, add positions for new copies
       if (layoutModeType === 'manual' && newCopies > p.copies) {
         for (let i = p.copies; i < newCopies; i++) {
           const key = p.id + '-' + i;
@@ -821,7 +822,9 @@
       pushUndo();
       p.fitMode = fitBtn.dataset.mode;
       layoutDirty = true;
-      renderAll();
+      renderPhotoList();
+      renderPreview();
+      renderStats();
       return;
     }
   });
@@ -852,6 +855,18 @@
     }
   });
 
+  // Debounced undo: only push one snapshot per input interaction
+  let _inputUndoPending = false;
+  let _inputUndoTimer = null;
+  function requestInputUndo() {
+    if (!_inputUndoPending) {
+      pushUndo();
+      _inputUndoPending = true;
+    }
+    clearTimeout(_inputUndoTimer);
+    _inputUndoTimer = setTimeout(() => { _inputUndoPending = false; }, 300);
+  }
+
   photoList.addEventListener('input', e => {
     const t = e.target, id = parseInt(t.dataset.id);
     const p = photos.find(x => x.id === id);
@@ -859,7 +874,7 @@
     if (t.classList.contains('copiesInput')) {
       const nv = Math.min(99, Math.max(1, parseInt(t.value) || 1));
       if (p.copies !== nv) {
-        pushUndo();
+        requestInputUndo();
         // In manual mode, add positions for new copies
         if (layoutModeType === 'manual' && nv > p.copies) {
           for (let i = p.copies; i < nv; i++) {
@@ -874,15 +889,15 @@
       }
     } else if (t.classList.contains('customW')) {
       const nv = Math.max(5, parseFloat(t.value) || 35) * 10;
-      if (p.customW !== nv) { pushUndo(); p.customW = nv; }
+      if (p.customW !== nv) { requestInputUndo(); p.customW = nv; }
     } else if (t.classList.contains('customH')) {
       const nv = Math.max(5, parseFloat(t.value) || 45) * 10;
-      if (p.customH !== nv) { pushUndo(); p.customH = nv; }
+      if (p.customH !== nv) { requestInputUndo(); p.customH = nv; }
     } else if (t.classList.contains('ppt-pos-slider')) {
       const axis = t.dataset.axis;
       const nv = Math.max(0, Math.min(100, parseInt(t.value) || 50));
-      if (axis === 'x' && p.posX !== nv) { pushUndo(); p.posX = nv; }
-      else if (axis === 'y' && p.posY !== nv) { pushUndo(); p.posY = nv; }
+      if (axis === 'x' && p.posX !== nv) { requestInputUndo(); p.posX = nv; }
+      else if (axis === 'y' && p.posY !== nv) { requestInputUndo(); p.posY = nv; }
       // Update label
       const label = t.parentElement.querySelector('.ppt-pos-label');
       if (label) label.textContent = (axis.toUpperCase()) + ' ' + nv + '%';
@@ -1014,10 +1029,10 @@
   }
   straightenSlider.addEventListener('input', () => {
     const val = parseInt(straightenSlider.value);
-    straightenVal.textContent = val + '°';
+    straightenVal.textContent = val + '\u00b0';
     if (selectedPhotoId !== null) {
       const p = photos.find(x => x.id === selectedPhotoId);
-      if (p && (p.straighten || 0) !== val) { pushUndo(); p.straighten = val; layoutDirty = true; renderPreview(); }
+      if (p && (p.straighten || 0) !== val) { requestInputUndo(); p.straighten = val; layoutDirty = true; renderPreview(); }
     }
   });
 
