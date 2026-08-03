@@ -1431,13 +1431,17 @@
   });
 
   // ── Controls ──
-  pageMargin.addEventListener('input', () => { layoutDirty = true; renderPreview(); renderStats(); });
-  photoGap.addEventListener('input', () => { layoutDirty = true; renderPreview(); renderStats(); });
-  layoutMode.addEventListener('change', () => {
-    maxRowsField.style.display = layoutMode.value === 'rows' ? '' : 'none';
-    layoutDirty = true; renderPreview(); renderStats();
-  });
-  maxRowsInput.addEventListener('input', () => { layoutDirty = true; renderPreview(); renderStats(); });
+  let _globalUndoPending = false;
+  let _globalUndoTimer = null;
+  function requestGlobalUndo() {
+    if (!_globalUndoPending) { pushUndo(); _globalUndoPending = true; }
+    clearTimeout(_globalUndoTimer);
+    _globalUndoTimer = setTimeout(() => { _globalUndoPending = false; }, 300);
+  }
+  pageMargin.addEventListener('input', () => { requestGlobalUndo(); layoutDirty = true; renderPreview(); renderStats(); });
+  photoGap.addEventListener('input', () => { requestGlobalUndo(); layoutDirty = true; renderPreview(); renderStats(); });
+  layoutMode.addEventListener('change', () => { requestGlobalUndo(); maxRowsField.style.display = layoutMode.value === 'rows' ? '' : 'none'; layoutDirty = true; renderPreview(); renderStats(); });
+  maxRowsInput.addEventListener('input', () => { requestGlobalUndo(); layoutDirty = true; renderPreview(); renderStats(); });
 
   // ── Controls toggle ──
   $('controlsToggle').addEventListener('click', () => {
