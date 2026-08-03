@@ -98,7 +98,7 @@
         <input type="file" id="fileInput" accept="image/*" multiple aria-label="Upload photos">
         <div class="ppt-upload-status" id="uploadStatus"></div>
 
-        <button class="ppt-controls-toggle" id="controlsToggle">
+        <button class="ppt-controls-toggle" id="controlsToggle" aria-expanded="false" aria-controls="controlsPanel">
           <svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           Settings
         </button>
@@ -595,6 +595,13 @@
       const img = document.createElement('img');
       img.src = p.src; img.alt = 'Uploaded photo for ' + p.name; img.loading = 'lazy';
       card.appendChild(img);
+      if (isSelected) {
+        const check = document.createElement('span');
+        check.className = 'ppt-card-check';
+        check.innerHTML = '<svg viewBox="0 0 16 16" fill="none" width="10" height="10"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        check.setAttribute('aria-label', 'Currently selected');
+        card.appendChild(check);
+      }
       const meta = document.createElement('div');
       meta.className = 'ppt-meta';
 
@@ -707,6 +714,7 @@
           posXSlider.type = 'range'; posXSlider.className = 'ppt-slider ppt-pos-slider';
           posXSlider.min = '0'; posXSlider.max = '100'; posXSlider.value = p.posX ?? 50;
           posXSlider.dataset.id = p.id; posXSlider.dataset.axis = 'x';
+          posXSlider.setAttribute('aria-label', 'Horizontal position (X)');
           posFieldX.appendChild(posXSlider);
           rowFit.appendChild(posFieldX);
           const posFieldY = document.createElement('div');
@@ -720,6 +728,7 @@
           posYSlider.type = 'range'; posYSlider.className = 'ppt-slider ppt-pos-slider';
           posYSlider.min = '0'; posYSlider.max = '100'; posYSlider.value = p.posY ?? 50;
           posYSlider.dataset.id = p.id; posYSlider.dataset.axis = 'y';
+          posYSlider.setAttribute('aria-label', 'Vertical position (Y)');
           posFieldY.appendChild(posYSlider);
           rowFit.appendChild(posFieldY);
         }
@@ -958,6 +967,9 @@
           slot.style.left = item.x + 'mm';
           slot.style.top = item.y + 'mm';
           if (item.copyKey) slot.dataset.copyKey = item.copyKey;
+          slot.tabIndex = 0;
+          slot.setAttribute('role', 'button');
+          slot.setAttribute('aria-label', 'Drag to reposition photo copy');
         }
         const img = document.createElement('img'); img.src = item.src; img.alt = 'Photo print copy for A4 layout';
         // Apply fit mode
@@ -1128,10 +1140,9 @@
       const dx = e.clientX - dragState.startMouseX;
       const dy = e.clientY - dragState.startMouseY;
       const a4Rect = dragState.scaleBox.getBoundingClientRect();
-      const scaleX = PW_PX / a4Rect.width;
-      const scaleY = PH_PX / a4Rect.height;
-      let newX = dragState.startSlotX + dx * scaleX;
-      let newY = dragState.startSlotY + dy * scaleY;
+      const mmPerPx = PW / a4Rect.width;
+      let newX = dragState.startSlotX + dx * mmPerPx;
+      let newY = dragState.startSlotY + dy * mmPerPx;
       // Constrain within page
       const parts = dragState.copyKey.split('-');
       const pid = parseInt(parts[0]);
@@ -1152,7 +1163,7 @@
       e.preventDefault();
       const slot = dragState.slot;
       slot.classList.remove('ppt-dragging');
-      slot.releasePointerCapture(e.pointerId);
+      try { slot.releasePointerCapture(e.pointerId); } catch (_) {}
       // Commit position
       const newX = parseFloat(slot.style.left) || 0;
       const newY = parseFloat(slot.style.top) || 0;
@@ -1184,6 +1195,29 @@
     dragSlot.classList.toggle('ppt-overlap', hasOverlap);
   }
   initDrag();
+
+  // ── Keyboard nudge for Manual mode slots ──
+  previewArea.addEventListener('keydown', e => {
+    if (layoutModeType !== 'manual') return;
+    const slot = e.target.closest('.ppt-slot');
+    if (!slot || !slot.dataset.copyKey) return;
+    const step = e.shiftKey ? 10 : 2;
+    let dx = 0, dy = 0;
+    if (e.key === 'ArrowLeft') dx = -step;
+    else if (e.key === 'ArrowRight') dx = step;
+    else if (e.key === 'ArrowUp') dy = -step;
+    else if (e.key === 'ArrowDown') dy = step;
+    else return;
+    e.preventDefault();
+    const curX = parseFloat(slot.style.left) || 0;
+    const curY = parseFloat(slot.style.top) || 0;
+    const newX = Math.max(0, Math.min(PW, curX + dx));
+    const newY = Math.max(0, Math.min(PH, curY + dy));
+    slot.style.left = newX + 'mm';
+    slot.style.top = newY + 'mm';
+    pushUndo();
+    copyPositions[slot.dataset.copyKey] = { x: newX, y: newY };
+  });
 
   // ── Undo / Redo / Reset ──
   $('undoBtn').addEventListener('click', undo);
@@ -1271,9 +1305,25 @@
   $('sizePresetSelect').addEventListener('change', e => {
     if (!photos.length) return;
     pushUndo();
-    photos.forEach(p => { p.sizeKey = e.target.value; });
+    const val = e.target.value;
+    photos.forEach(p => { p.sizeKey = val; });
+    // ID Card auto-settings (same as per-photo handler)
+    if (val === ID_CARD_KEY) {
+      if (!idCardActive) {
+        savedSettings = { margin: pageMargin.value, gap: photoGap.value, layoutMode: layoutMode.value, maxRows: maxRowsInput.value };
+        idCardActive = true;
+      }
+      pageMargin.value = ID_CARD_SETTINGS.margin;
+      photoGap.value = ID_CARD_SETTINGS.gap;
+      layoutMode.value = ID_CARD_SETTINGS.layoutMode;
+      maxRowsInput.value = ID_CARD_SETTINGS.maxRows;
+      maxRowsField.style.display = '';
+      toast('ID Card layout applied — 30mm margin, 30mm gap, 2 rows/page.');
+    } else {
+      revertIdCard();
+    }
     layoutDirty = true; renderAll();
-    toast('Size changed: ' + (SIZE_PRESETS[e.target.value] || {}).label);
+    if (val !== ID_CARD_KEY) toast('Size changed: ' + (SIZE_PRESETS[val] || {}).label);
   });
 
   // ── Quick Actions ──
@@ -1300,7 +1350,14 @@
   $('whatsNewBtn').addEventListener('click', () => { toast('Latest: Undo/Redo, Rotate, Compare, Size presets!'); });
 
   // ── Bottom bar ──
-  $('previewBtn').addEventListener('click', () => { switchTab('preview'); });
+  $('previewBtn').addEventListener('click', () => {
+    const rightPanel = document.querySelector('.ppt-right-panel');
+    if (rightPanel && getComputedStyle(rightPanel).display !== 'none') {
+      switchTab('preview');
+    } else {
+      previewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
   $('printBtnBottom').addEventListener('click', () => window.print());
 
   // ── Download as PNG ──
@@ -1447,9 +1504,10 @@
   $('controlsToggle').addEventListener('click', () => {
     const panel = $('controlsPanel');
     const btn = $('controlsToggle');
-    panel.classList.toggle('ppt-controls-hidden');
-    btn.classList.toggle('active');
-    btn.innerHTML = panel.classList.contains('ppt-controls-hidden')
+    const hidden = panel.classList.toggle('ppt-controls-hidden');
+    btn.classList.toggle('active', !hidden);
+    btn.setAttribute('aria-expanded', String(!hidden));
+    btn.innerHTML = hidden
       ? '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Settings'
       : '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Settings';
   });
