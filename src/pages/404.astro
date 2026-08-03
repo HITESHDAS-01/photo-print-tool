@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Page Not Found — Photo Print Tool"
+  description="The page you're looking for doesn't exist. Go back to Photo Print Tool to arrange passport photos on A4 pages."
+>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="header-brand">
+        <svg viewBox="0 0 24 24" fill="none" width="28" height="28"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#F5AE0A" stroke-width="1.8"/><circle cx="12" cy="14" r="3.4" stroke="#F5AE0A" stroke-width="1.8"/><path d="M8 7l1.2-2.5h5.6L16 7" stroke="#F5AE0A" stroke-width="1.8"/></svg>
+        <span>Photo Print Tool</span>
+      </a>
+      <span class="header-badge">100% Free & Private</span>
+    </div>
+  </header>
+
+  <main class="error-page">
+    <div class="error-inner">
+      <div class="error-code">404</div>
+      <h1>Page Not Found</h1>
+      <p>The page you're looking for doesn't exist or has been moved.</p>
+      <a href="/" class="error-home-btn">Back to Photo Print Tool</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <nav class="footer-links">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms &amp; Conditions</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+      </nav>
+      <p>Photo Print Tool — Free, private, browser-based. No uploads, no accounts.</p>
+      <p class="footer-sub">Built with Astro. All processing happens locally in your browser.</p>
+    </div>
+  </footer>
+</Layout>

@@ -10,6 +10,8 @@ interface Props {
 const { title, description, canonical } = Astro.props;
 const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
 const canonicalUrl = canonical ?? `${siteUrl}${Astro.url.pathname}`;
+
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
 ---
 
 <!DOCTYPE html>

@@ -333,14 +333,14 @@
     return new Promise(resolve => {
       const img = new Image();
       img.onload = () => {
+        let c;
         if (norm === 90 || norm === 270) {
-          const c = document.createElement('canvas');
+          c = document.createElement('canvas');
           c.width = img.height; c.height = img.width;
           const ctx = c.getContext('2d');
           ctx.translate(c.width / 2, c.height / 2);
           ctx.rotate(norm * Math.PI / 180);
           ctx.drawImage(img, -img.width / 2, -img.height / 2);
-          resolve(c.toDataURL('image/jpeg', 0.92));
         } else {
           const rad = norm * Math.PI / 180;
           const absRad = Math.abs(rad);
@@ -348,7 +348,7 @@
           const bboxW = img.width * cos + img.height * sin;
           const bboxH = img.width * sin + img.height * cos;
           const scale = Math.max(img.width / bboxW, img.height / bboxH) * 1.02;
-          const c = document.createElement('canvas');
+          c = document.createElement('canvas');
           c.width = Math.ceil(bboxW * scale);
           c.height = Math.ceil(bboxH * scale);
           const ctx = c.getContext('2d');
@@ -356,8 +356,8 @@
           ctx.rotate(rad);
           ctx.scale(scale, scale);
           ctx.drawImage(img, -img.width / 2, -img.height / 2);
-          resolve(c.toDataURL('image/jpeg', 0.92));
         }
+        resolve(c.toDataURL('image/jpeg', 0.92));
       };
       img.onerror = () => resolve(src);
       img.src = src;
@@ -454,7 +454,6 @@
         const src = await downscale(file, MAX_DIM);
         const p = { id: nextId++, src: src, originalSrc: src, name: file.name || 'Photo ' + nextId, sizeKey: 'passport', customW: 35, customH: 45, copies: 1, rotation: 0, straighten: 0, fitMode: 'cover', posX: 50, posY: 50 };
         photos.push(p);
-        // Set initial position in manual mode
         if (layoutModeType === 'manual') {
           copyPositions[p.id + '-0'] = { x: nextPlaceX, y: nextPlaceY };
           nextPlaceX += 40;
@@ -465,6 +464,7 @@
       } catch (e) { console.error('Failed:', file.name, e); fail++; }
       done++;
       uploadStatus.textContent = 'Processing ' + done + '/' + files.length + '…';
+      if (done < files.length) await yieldToMain();
     }
     if (fail) toast(fail + ' file' + (fail > 1 ? 's' : '') + ' could not be loaded.');
     uploadStatus.textContent = '';
@@ -491,6 +491,10 @@
       };
       r.readAsDataURL(file);
     });
+  }
+
+  function yieldToMain() {
+    return new Promise(resolve => { if (typeof requestIdleCallback !== 'undefined') { requestIdleCallback(resolve, { timeout: 16 }); } else { setTimeout(resolve, 0); } });
   }
 
   // ── Layout ──
@@ -588,7 +592,7 @@
       card.className = 'ppt-card' + (p.id === selectedPhotoId ? ' ppt-card-selected' : '');
       card.dataset.id = p.id;
       const img = document.createElement('img');
-      img.src = p.src; img.alt = p.name; img.loading = 'lazy';
+      img.src = p.src; img.alt = 'Uploaded photo for ' + p.name; img.loading = 'lazy';
       card.appendChild(img);
       const meta = document.createElement('div');
       meta.className = 'ppt-meta';
@@ -885,7 +889,7 @@
           slot.style.top = item.y + 'mm';
           if (item.copyKey) slot.dataset.copyKey = item.copyKey;
         }
-        const img = document.createElement('img'); img.src = item.src; img.alt = 'Print copy';
+        const img = document.createElement('img'); img.src = item.src; img.alt = 'Photo print copy for A4 layout';
         // Apply fit mode
         img.style.objectFit = item.fitMode || 'cover';
         if (item.fitMode === 'cover') {
