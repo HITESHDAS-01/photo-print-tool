@@ -622,15 +622,14 @@
         meta.appendChild(summary);
       } else {
         // ── Expanded card (selected) ──
-        // Group 1: Size + Copies
+        // Group 1: Size + Copies (compact, no labels)
         const group1 = document.createElement('div');
         group1.className = 'ppt-card-group';
         const row1 = document.createElement('div');
-        row1.className = 'ppt-row';
+        row1.className = 'ppt-row ppt-row-compact';
         const sizeField = document.createElement('div');
         sizeField.className = 'ppt-field';
-        sizeField.style.flex = '1.4';
-        const sl = document.createElement('label'); sl.textContent = 'Size'; sizeField.appendChild(sl);
+        sizeField.style.flex = '1.6';
         const sel = document.createElement('select');
         sel.className = 'sizeSelect'; sel.dataset.id = p.id;
         Object.entries(SIZE_GROUPS).forEach(([gl, opts]) => {
@@ -646,25 +645,25 @@
         row1.appendChild(sizeField);
         const cpField = document.createElement('div');
         cpField.className = 'ppt-field';
-        cpField.style.flex = '.8';
-        const cl = document.createElement('label'); cl.textContent = 'Copies'; cpField.appendChild(cl);
+        cpField.style.flex = '.6';
         const ci = document.createElement('input');
         ci.type = 'number'; ci.className = 'copiesInput'; ci.dataset.id = p.id;
         ci.value = p.copies; ci.min = '1'; ci.max = '99';
+        ci.placeholder = 'Copies';
         cpField.appendChild(ci);
         row1.appendChild(cpField);
         group1.appendChild(row1);
         if (p.sizeKey === 'custom') {
-          const rc = document.createElement('div'); rc.className = 'ppt-row';
+          const rc = document.createElement('div'); rc.className = 'ppt-row ppt-row-compact';
           const wf = document.createElement('div'); wf.className = 'ppt-field';
-          const wl = document.createElement('label'); wl.textContent = 'W (cm)'; wf.appendChild(wl);
+          wf.style.flex = '1';
           const wi = document.createElement('input'); wi.type = 'number'; wi.className = 'customW'; wi.dataset.id = p.id;
-          wi.value = (p.customW / 10).toFixed(1); wi.step = '0.1'; wi.min = '0.5';
+          wi.value = (p.customW / 10).toFixed(1); wi.step = '0.1'; wi.min = '0.5'; wi.placeholder = 'W cm';
           wf.appendChild(wi); rc.appendChild(wf);
           const hf = document.createElement('div'); hf.className = 'ppt-field';
-          const hl = document.createElement('label'); hl.textContent = 'H (cm)'; hf.appendChild(hl);
+          hf.style.flex = '1';
           const hi = document.createElement('input'); hi.type = 'number'; hi.className = 'customH'; hi.dataset.id = p.id;
-          hi.value = (p.customH / 10).toFixed(1); hi.step = '0.1'; hi.min = '0.5';
+          hi.value = (p.customH / 10).toFixed(1); hi.step = '0.1'; hi.min = '0.5'; hi.placeholder = 'H cm';
           hf.appendChild(hi); rc.appendChild(hf);
           group1.appendChild(rc);
         }
@@ -677,13 +676,11 @@
         const group2 = document.createElement('div');
         group2.className = 'ppt-card-group';
         const rowFit = document.createElement('div');
-        rowFit.className = 'ppt-row';
+        rowFit.className = 'ppt-row ppt-row-compact';
         rowFit.style.alignItems = 'flex-end';
         const fitField = document.createElement('div');
         fitField.className = 'ppt-field';
-        fitField.style.flex = '1';
-        const fitLabel = document.createElement('label'); fitLabel.textContent = 'Fit';
-        fitField.appendChild(fitLabel);
+        fitField.style.flex = '0 0 auto';
         const fitToggle = document.createElement('div');
         fitToggle.className = 'ppt-fit-toggle';
         fitToggle.dataset.id = p.id;

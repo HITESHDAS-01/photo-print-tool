@@ -571,6 +571,16 @@
   background: var(--ppt-paper);
   color: var(--ppt-ink);
   width: 100%;
+  min-width: 0;
+}
+.ppt-card .ppt-field select,
+.ppt-card .ppt-field input[type=number] {
+  padding: 5px 6px;
+  font-size: 11px;
+}
+.ppt-card .ppt-field select {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .ppt-field select:focus,
 .ppt-field input[type=number]:focus { border-color: var(--ppt-yellow); box-shadow: 0 0 0 2px rgba(245,174,10,0.2); }
@@ -619,9 +629,9 @@
 .ppt-card {
   border: 1px solid rgba(39,32,25,0.08);
   border-radius: var(--ppt-radius-card);
-  padding: 8px;
+  padding: 6px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   background: var(--ppt-paper);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -630,13 +640,15 @@
   box-shadow: 0 2px 8px rgba(39,32,25,0.06);
 }
 .ppt-card img {
-  width: 44px; height: 44px; object-fit: cover;
-  border-radius: 6px; border: 1px solid rgba(39,32,25,0.08);
+  width: 40px; height: 40px; object-fit: cover;
+  border-radius: 5px; border: 1px solid rgba(39,32,25,0.08);
   flex-shrink: 0;
 }
-.ppt-card .ppt-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.ppt-card .ppt-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .ppt-card .ppt-row { display: flex; gap: 5px; }
 .ppt-card .ppt-row .ppt-field { flex: 1; min-width: 0; }
+.ppt-card .ppt-row-compact { gap: 4px; align-items: stretch; }
+.ppt-card .ppt-row-compact .ppt-field { min-width: 0; }
 .ppt-card .ppt-row2 { display: flex; gap: 5px; align-items: center; }
 .ppt-fit-toggle {
   display: flex;
@@ -646,7 +658,7 @@
 }
 .ppt-fit-btn {
   flex: 1;
-  padding: 5px 8px;
+  padding: 4px 6px;
   font-size: 9px;
   font-weight: 700;
   border: none;
@@ -699,10 +711,10 @@
   background: var(--ppt-yellow-soft);
   border: 1px solid rgba(245,174,10,0.3);
   color: var(--ppt-ink);
-  border-radius: 6px;
-  font-size: 10px;
+  border-radius: 5px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 4px 8px;
+  padding: 3px 7px;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
@@ -1479,7 +1491,7 @@
 
 /* Card visual groups */
 .ppt-card-group {
-  padding-top: 6px;
+  padding-top: 4px;
 }
 .ppt-card-group:first-child {
   padding-top: 0;
@@ -1487,7 +1499,7 @@
 .ppt-card-divider {
   height: 1px;
   background: rgba(39,32,25,0.07);
-  margin: 6px 0;
+  margin: 4px 0;
 }
 .ppt-card .ppt-meta {
   gap: 4px;
