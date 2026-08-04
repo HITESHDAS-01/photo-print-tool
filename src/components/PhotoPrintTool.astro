@@ -942,6 +942,11 @@
   function renderPreview() {
     const { pages, margin, gap, maxRows } = getLayout();
     previewArea.innerHTML = '';
+    // Re-add rulers + guides (destroyed by innerHTML wipe)
+    previewArea.appendChild(RULER_CORNER);
+    previewArea.appendChild(RULER_H);
+    previewArea.appendChild(RULER_V);
+    previewArea.appendChild(GUIDES_EL);
     if (!photos.length || !pages.length) {
       previewArea.appendChild(noPhotosMsg);
       return;
@@ -1536,6 +1541,7 @@
   // ── Rulers ──
   const RULER_H = $('rulerH');
   const RULER_V = $('rulerV');
+  const RULER_CORNER = $('rulerCorner');
   const RULER_HC = $('rulerHCanvas');
   const RULER_VC = $('rulerVCanvas');
   const RULER_CURSOR_H = $('rulerCursorH');
@@ -1808,7 +1814,7 @@
     const showRulers = guidesVisible;
     RULER_H.style.display = showRulers ? '' : 'none';
     RULER_V.style.display = showRulers ? '' : 'none';
-    $('rulerCorner').style.display = showRulers ? '' : 'none';
+    RULER_CORNER.style.display = showRulers ? '' : 'none';
     GUIDES_EL.style.display = showRulers ? '' : 'none';
   });
 
