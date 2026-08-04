@@ -1581,6 +1581,10 @@
     const { pxPerMm, a4Left, a4Top } = getA4Scale();
     const dpr = window.devicePixelRatio || 1;
 
+    // Compute total content height for vertical ruler
+    const printArea = previewArea.querySelector('.print-area');
+    const contentH = printArea ? printArea.offsetHeight : previewArea.clientHeight;
+
     // Horizontal ruler
     const hEl = RULER_H;
     const hW = hEl.clientWidth;
@@ -1620,7 +1624,8 @@
     // Vertical ruler
     const vEl = RULER_V;
     const vW = 36;
-    const vH = vEl.clientHeight;
+    const vH = contentH;
+    vEl.style.height = vH + 'px';
     RULER_VC.width = vW * dpr;
     RULER_VC.height = vH * dpr;
     RULER_VC.style.width = vW + 'px';
@@ -1743,6 +1748,11 @@
     const { pxPerMm, a4Left, a4Top } = getA4Scale();
     const a4 = previewArea.querySelector('.ppt-a4');
     if (!a4) return;
+
+    // Set guides container height to match content
+    const printArea = previewArea.querySelector('.print-area');
+    const contentH = printArea ? printArea.offsetHeight : previewArea.clientHeight;
+    GUIDES_EL.style.height = contentH + 'px';
 
     guides.forEach(g => {
       const el = document.createElement('div');

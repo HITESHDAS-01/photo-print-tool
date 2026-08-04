@@ -1633,7 +1633,7 @@
   cursor: crosshair;
 }
 .ppt-ruler-v {
-  position: absolute; top: 36px; left: 0; bottom: 0;
+  position: absolute; top: 36px; left: 0;
   width: 36px;
   background: var(--ppt-paper);
   border-right: 1px solid rgba(39,32,25,0.15);
@@ -1670,7 +1670,7 @@
 #rulerLabelV { right: 0; transform: translateX(4px); }
 
 .ppt-guides {
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  position: absolute; top: 0; left: 0; right: 0;
   pointer-events: none; z-index: 18;
 }
 .ppt-guide {
