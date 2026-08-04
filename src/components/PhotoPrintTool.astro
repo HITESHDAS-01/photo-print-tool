@@ -250,6 +250,46 @@
 
 <div class="ppt-toast" id="toast"></div>
 
+<!-- Crop Modal -->
+<div class="ppt-crop-overlay" id="cropOverlay">
+  <div class="ppt-crop-modal">
+    <div class="ppt-crop-header">
+      <span class="ppt-crop-title">Crop Photo</span>
+      <button class="ppt-crop-close" id="cropCancel" title="Cancel">\u2715</button>
+    </div>
+    <div class="ppt-crop-body" id="cropBody">
+      <img id="cropImage" src="" alt="Crop preview" />
+      <div class="ppt-crop-box" id="cropBox">
+        <div class="ppt-crop-shade ppt-crop-shade-top" id="cropShadeTop"></div>
+        <div class="ppt-crop-shade ppt-crop-shade-bottom" id="cropShadeBottom"></div>
+        <div class="ppt-crop-shade ppt-crop-shade-left" id="cropShadeLeft"></div>
+        <div class="ppt-crop-shade ppt-crop-shade-right" id="cropShadeRight"></div>
+        <div class="ppt-crop-handle" data-handle="tl"></div>
+        <div class="ppt-crop-handle" data-handle="tr"></div>
+        <div class="ppt-crop-handle" data-handle="bl"></div>
+        <div class="ppt-crop-handle" data-handle="br"></div>
+        <div class="ppt-crop-handle" data-handle="tm"></div>
+        <div class="ppt-crop-handle" data-handle="bm"></div>
+        <div class="ppt-crop-handle" data-handle="ml"></div>
+        <div class="ppt-crop-handle" data-handle="mr"></div>
+      </div>
+    </div>
+    <div class="ppt-crop-footer">
+      <div class="ppt-crop-presets">
+        <button class="ppt-crop-preset active" data-ratio="free">Free</button>
+        <button class="ppt-crop-preset" data-ratio="1:1">1:1</button>
+        <button class="ppt-crop-preset" data-ratio="3:4">3:4</button>
+        <button class="ppt-crop-preset" data-ratio="4:5">4:5</button>
+        <button class="ppt-crop-preset" data-ratio="passport">Passport</button>
+      </div>
+      <div class="ppt-crop-actions">
+        <button class="ppt-btn" id="cropCancelBtn">Cancel</button>
+        <button class="ppt-btn ppt-btn-accent" id="cropApplyBtn">Apply Crop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   "use strict";
@@ -370,6 +410,29 @@
     });
   }
 
+  // ── Canvas crop helper ──
+  // Bakes a crop region (percentages 0-100) into a new data URL.
+  function cropImageSrc(src, cropX, cropY, cropW, cropH) {
+    if (!cropX && !cropY && cropW === 100 && cropH === 100) return src;
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const sx = (cropX / 100) * img.width;
+        const sy = (cropY / 100) * img.height;
+        const sw = (cropW / 100) * img.width;
+        const sh = (cropH / 100) * img.height;
+        const c = document.createElement('canvas');
+        c.width = Math.round(sw);
+        c.height = Math.round(sh);
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', 0.92));
+      };
+      img.onerror = () => resolve(src);
+      img.src = src;
+    });
+  }
+
   // ── Undo / Redo ──
   // Snapshots store full photo objects (including src) so deleted photos can be restored.
   function getSnapshot() {
@@ -378,7 +441,8 @@
         id: p.id, src: p.src, originalSrc: p.originalSrc, name: p.name,
         sizeKey: p.sizeKey, customW: p.customW, customH: p.customH,
         copies: p.copies, rotation: p.rotation || 0, straighten: p.straighten || 0,
-        fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50
+        fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50,
+        cropX: p.cropX ?? 0, cropY: p.cropY ?? 0, cropW: p.cropW ?? 100, cropH: p.cropH ?? 100
       })),
       nextId,
       margin: pageMargin.value,
@@ -410,7 +474,8 @@
       id: sp.id, src: sp.src, originalSrc: sp.originalSrc || sp.src, name: sp.name,
       sizeKey: sp.sizeKey, customW: sp.customW, customH: sp.customH,
       copies: sp.copies, rotation: sp.rotation || 0, straighten: sp.straighten || 0,
-      fitMode: sp.fitMode || 'cover', posX: sp.posX ?? 50, posY: sp.posY ?? 50
+      fitMode: sp.fitMode || 'cover', posX: sp.posX ?? 50, posY: sp.posY ?? 50,
+      cropX: sp.cropX ?? 0, cropY: sp.cropY ?? 0, cropW: sp.cropW ?? 100, cropH: sp.cropH ?? 100
     }));
     // Restore layout mode
     if (state.layoutModeType) {
@@ -458,7 +523,7 @@
       if (photos.length >= MAX_PHOTOS) break;
       try {
         const src = await downscale(file, MAX_DIM);
-        const p = { id: nextId++, src: src, originalSrc: src, name: file.name || 'Photo ' + nextId, sizeKey: 'passport', customW: 35, customH: 45, copies: 1, rotation: 0, straighten: 0, fitMode: 'cover', posX: 50, posY: 50 };
+        const p = { id: nextId++, src: src, originalSrc: src, name: file.name || 'Photo ' + nextId, sizeKey: 'passport', customW: 35, customH: 45, copies: 1, rotation: 0, straighten: 0, fitMode: 'cover', posX: 50, posY: 50, cropX: 0, cropY: 0, cropW: 100, cropH: 100 };
         photos.push(p);
         if (layoutModeType === 'manual') {
           copyPositions[p.id + '-0'] = { x: nextPlaceX, y: nextPlaceY };
@@ -707,6 +772,17 @@
         fitToggle.appendChild(containBtn);
         fitField.appendChild(fitToggle);
         rowFit.appendChild(fitField);
+        // Crop button
+        const cropField = document.createElement('div');
+        cropField.className = 'ppt-field';
+        cropField.style.flex = '0 0 auto';
+        const cropBtn = document.createElement('button');
+        cropBtn.className = 'ppt-mini-btn cropBtn';
+        cropBtn.dataset.id = p.id;
+        cropBtn.textContent = 'Crop';
+        cropBtn.title = 'Crop photo';
+        cropField.appendChild(cropBtn);
+        rowFit.appendChild(cropField);
         // Position sliders (only for cover mode)
         if (p.fitMode !== 'contain') {
           const posFieldX = document.createElement('div');
@@ -1289,6 +1365,201 @@
   }
   $('rotateLeftBtn').addEventListener('click', () => rotateSelected('left'));
   $('rotateRightBtn').addEventListener('click', () => rotateSelected('right'));
+
+  // ── Crop modal ──
+  const cropOverlay = $('cropOverlay');
+  const cropImage = $('cropImage');
+  const cropBox = $('cropBox');
+  const cropBody = $('cropBody');
+  let cropState = null;
+
+  const CROP_RATIOS = { free: null, '1:1': 1, '3:4': 3 / 4, '4:5': 4 / 5, passport: 35 / 45 };
+
+  function openCropModal(photoId) {
+    const p = photos.find(x => x.id === photoId);
+    if (!p) return;
+    cropImage.src = p.src;
+    cropOverlay.classList.add('show');
+    cropState = {
+      photoId: p.id,
+      imgNaturalW: 0, imgNaturalH: 0,
+      cropX: p.cropX ?? 0, cropY: p.cropY ?? 0, cropW: p.cropW ?? 100, cropH: p.cropH ?? 100,
+      ratio: null, dragging: null, startX: 0, startY: 0, startCrop: null
+    };
+    cropImage.onload = () => {
+      cropState.imgNaturalW = cropImage.naturalWidth;
+      cropState.imgNaturalH = cropImage.naturalHeight;
+      updateCropBox();
+    };
+    if (cropImage.complete && cropImage.naturalWidth) {
+      cropState.imgNaturalW = cropImage.naturalWidth;
+      cropState.imgNaturalH = cropImage.naturalHeight;
+      updateCropBox();
+    }
+  }
+
+  function closeCropModal() {
+    cropOverlay.classList.remove('show');
+    cropState = null;
+  }
+
+  function updateCropBox() {
+    if (!cropState) return;
+    const bodyRect = cropBody.getBoundingClientRect();
+    const imgW = cropImage.clientWidth;
+    const imgH = cropImage.clientHeight;
+    const imgLeft = cropImage.offsetLeft;
+    const imgTop = cropImage.offsetTop;
+    const x = imgLeft + (cropState.cropX / 100) * imgW;
+    const y = imgTop + (cropState.cropY / 100) * imgH;
+    const w = (cropState.cropW / 100) * imgW;
+    const h = (cropState.cropH / 100) * imgH;
+    cropBox.style.left = x + 'px';
+    cropBox.style.top = y + 'px';
+    cropBox.style.width = w + 'px';
+    cropBox.style.height = h + 'px';
+  }
+
+  // Crop box dragging
+  cropBox.addEventListener('pointerdown', e => {
+    if (!cropState || e.target.closest('.ppt-crop-handle')) return;
+    e.preventDefault();
+    cropState.dragging = 'move';
+    cropState.startX = e.clientX;
+    cropState.startY = e.clientY;
+    cropState.startCrop = { x: cropState.cropX, y: cropState.cropY, w: cropState.cropW, h: cropState.cropH };
+    cropBox.setPointerCapture(e.pointerId);
+  });
+
+  // Handle dragging
+  cropBox.querySelectorAll('.ppt-crop-handle').forEach(h => {
+    h.addEventListener('pointerdown', e => {
+      if (!cropState) return;
+      e.preventDefault();
+      e.stopPropagation();
+      cropState.dragging = h.dataset.handle;
+      cropState.startX = e.clientX;
+      cropState.startY = e.clientY;
+      cropState.startCrop = { x: cropState.cropX, y: cropState.cropY, w: cropState.cropW, h: cropState.cropH };
+      cropBox.setPointerCapture(e.pointerId);
+    });
+  });
+
+  cropBox.addEventListener('pointermove', e => {
+    if (!cropState || !cropState.dragging) return;
+    e.preventDefault();
+    const imgW = cropImage.clientWidth;
+    const imgH = cropImage.clientHeight;
+    const dxPx = e.clientX - cropState.startX;
+    const dyPx = e.clientY - cropState.startY;
+    const dxPct = (dxPx / imgW) * 100;
+    const dyPct = (dyPx / imgH) * 100;
+    const sc = cropState.startCrop;
+    const minSize = 5;
+    let nx = sc.x, ny = sc.y, nw = sc.w, nh = sc.h;
+
+    if (cropState.dragging === 'move') {
+      nx = Math.max(0, Math.min(100 - sc.w, sc.x + dxPct));
+      ny = Math.max(0, Math.min(100 - sc.h, sc.y + dyPct));
+    } else {
+      const h = cropState.dragging;
+      // Compute new raw values based on handle
+      if (h === 'tl' || h === 'ml' || h === 'bl') {
+        nx = Math.max(0, Math.min(sc.x + sc.w - minSize, sc.x + dxPct));
+        nw = sc.w - (nx - sc.x);
+      }
+      if (h === 'tr' || h === 'mr' || h === 'br') {
+        nw = Math.max(minSize, Math.min(100 - sc.x, sc.w + dxPct));
+      }
+      if (h === 'tl' || h === 'tm' || h === 'tr') {
+        ny = Math.max(0, Math.min(sc.y + sc.h - minSize, sc.y + dyPct));
+        nh = sc.h - (ny - sc.y);
+      }
+      if (h === 'bl' || h === 'bm' || h === 'br') {
+        nh = Math.max(minSize, Math.min(100 - sc.y, sc.h + dyPct));
+      }
+      // Enforce aspect ratio
+      if (cropState.ratio) {
+        const imgAR = cropState.imgNaturalW / cropState.imgNaturalH;
+        const cropAR = (nw / 100 * imgW) / (nh / 100 * imgH);
+        if (cropAR > cropState.ratio) {
+          nw = nh * cropState.ratio * (imgH / imgW);
+        } else {
+          nh = nw / cropState.ratio * (imgW / imgH);
+        }
+        // Clamp
+        if (nx + nw > 100) { nw = 100 - nx; nh = nw / cropState.ratio * (imgW / imgH); }
+        if (ny + nh > 100) { nh = 100 - ny; nw = nh * cropState.ratio * (imgH / imgW); }
+      }
+    }
+    cropState.cropX = Math.max(0, Math.min(100, nx));
+    cropState.cropY = Math.max(0, Math.min(100, ny));
+    cropState.cropW = Math.max(minSize, Math.min(100 - cropState.cropX, nw));
+    cropState.cropH = Math.max(minSize, Math.min(100 - cropState.cropY, nh));
+    updateCropBox();
+  });
+
+  cropBox.addEventListener('pointerup', () => { if (cropState) cropState.dragging = null; });
+
+  // Preset buttons
+  document.querySelectorAll('.ppt-crop-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ppt-crop-preset').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (!cropState) return;
+      cropState.ratio = CROP_RATIOS[btn.dataset.ratio] || null;
+      if (cropState.ratio) {
+        // Fit current crop to ratio
+        const imgAR = cropState.imgNaturalW / cropState.imgNaturalH;
+        const boxAR = (cropState.cropW / 100 * cropImage.clientWidth) / (cropState.cropH / 100 * cropImage.clientHeight);
+        if (boxAR > cropState.ratio) {
+          cropState.cropW = cropState.cropH * cropState.ratio * (cropImage.clientHeight / cropImage.clientWidth);
+        } else {
+          cropState.cropH = cropState.cropW / cropState.ratio * (cropImage.clientWidth / cropImage.clientHeight);
+        }
+        // Center
+        cropState.cropX = (100 - cropState.cropW) / 2;
+        cropState.cropY = (100 - cropState.cropH) / 2;
+        updateCropBox();
+      }
+    });
+  });
+
+  // Apply crop
+  $('cropApplyBtn').addEventListener('click', async () => {
+    if (!cropState) return;
+    const p = photos.find(x => x.id === cropState.photoId);
+    if (!p) { closeCropModal(); return; }
+    // Check if crop is essentially full image
+    if (cropState.cropX < 0.5 && cropState.cropY < 0.5 && cropState.cropW > 99.5 && cropState.cropH > 99.5) {
+      closeCropModal(); return;
+    }
+    pushUndo();
+    p.cropX = cropState.cropX;
+    p.cropY = cropState.cropY;
+    p.cropW = cropState.cropW;
+    p.cropH = cropState.cropH;
+    // Bake crop into src
+    const croppedSrc = await cropImageSrc(p.src, p.cropX, p.cropY, p.cropW, p.cropH);
+    p.src = croppedSrc;
+    // Reset crop params (already baked in)
+    p.cropX = 0; p.cropY = 0; p.cropW = 100; p.cropH = 100;
+    layoutDirty = true;
+    renderAll();
+    closeCropModal();
+    toast('Photo cropped');
+  });
+
+  // Cancel crop
+  $('cropCancel').addEventListener('click', closeCropModal);
+  $('cropCancelBtn').addEventListener('click', closeCropModal);
+  cropOverlay.addEventListener('click', e => { if (e.target === cropOverlay) closeCropModal(); });
+
+  // Crop button delegation
+  photoList.addEventListener('click', e => {
+    const cb = e.target.closest('.cropBtn');
+    if (cb) { openCropModal(parseInt(cb.dataset.id)); }
+  });
 
   // ── Compare ──
   $('compareBtn').addEventListener('click', () => {
