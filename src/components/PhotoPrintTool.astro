@@ -545,7 +545,7 @@
 
     // Auto-fill mode (existing shelf-packing)
     const items = [];
-    photos.forEach(p => { const s = getSizeMM(p); for (let i = 0; i < p.copies; i++) items.push({ src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50 }); });
+    photos.forEach(p => { const s = getSizeMM(p); for (let i = 0; i < p.copies; i++) items.push({ src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50, copyKey: p.id + '-' + i }); });
     const pages = [];
     let curPage = [], rowItems = [], rowW = 0, rowH = 0, pageH = 0, rows = 0;
     function flushRow() {
@@ -976,10 +976,10 @@
         slot.className = 'ppt-slot';
         slot.style.width = item.w + 'mm';
         slot.style.height = item.h + 'mm';
+        if (item.copyKey) slot.dataset.copyKey = item.copyKey;
         if (layoutModeType === 'manual') {
           slot.style.left = item.x + 'mm';
           slot.style.top = item.y + 'mm';
-          if (item.copyKey) slot.dataset.copyKey = item.copyKey;
           slot.tabIndex = 0;
           slot.setAttribute('role', 'button');
           slot.setAttribute('aria-label', 'Drag to reposition photo copy');
@@ -1081,48 +1081,54 @@
       b.classList.toggle('active', b.dataset.mode === layoutModeType);
     });
   }
+  function switchToManual() {
+    if (layoutModeType === 'manual') return;
+    pushUndo();
+    // Snapshot current auto positions as starting point
+    const { pages } = getLayout();
+    photos.forEach(p => {
+      const s = getSizeMM(p);
+      for (let i = 0; i < p.copies; i++) {
+        const key = p.id + '-' + i;
+        if (copyPositions[key]) continue;
+        let found = null;
+        for (const page of pages) {
+          for (const row of page) {
+            for (const item of row.items) {
+              if (item.copyKey === key) { found = item; break; }
+            }
+            if (found) break;
+          }
+          if (found) break;
+        }
+        if (found) {
+          copyPositions[key] = { x: found.x, y: found.y };
+        } else {
+          copyPositions[key] = { x: nextPlaceX, y: nextPlaceY };
+          nextPlaceX += 40;
+          if (nextPlaceX > PW - 40) { nextPlaceX = 20; nextPlaceY += 55; }
+          if (nextPlaceY > PH - 50) { nextPlaceY = 20; }
+        }
+      }
+    });
+    layoutModeType = 'manual';
+    updateLayoutToggle();
+    layoutDirty = true;
+    renderAll();
+  }
   document.querySelectorAll('.ppt-layout-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const newMode = btn.dataset.mode;
       if (newMode === layoutModeType) return;
-      pushUndo();
       if (newMode === 'manual') {
-        // Snapshot current auto positions as starting point
-        const { pages } = getLayout();
-        let copyIdx = 0;
-        photos.forEach(p => {
-          const s = getSizeMM(p);
-          for (let i = 0; i < p.copies; i++) {
-            const key = p.id + '-' + i;
-            // Find this item in auto layout to get its position
-            let found = null;
-            for (const page of pages) {
-              for (const row of page) {
-                for (const item of row.items) {
-                  if (item.copyKey === key || (!item.copyKey && copyIdx === copyIdx)) {
-                    found = item; break;
-                  }
-                }
-                if (found) break;
-              }
-              if (found) break;
-            }
-            if (found && !copyPositions[key]) {
-              copyPositions[key] = { x: found.x, y: found.y };
-            } else if (!copyPositions[key]) {
-              copyPositions[key] = { x: nextPlaceX, y: nextPlaceY };
-            }
-            copyIdx++;
-          }
-        });
-        // Cascade next position
-        nextPlaceX = 20; nextPlaceY += 30;
-        if (nextPlaceY > PH - 20) { nextPlaceX += 40; nextPlaceY = 20; }
+        switchToManual();
+      } else {
+        pushUndo();
+        layoutModeType = newMode;
+        updateLayoutToggle();
+        layoutDirty = true;
+        renderAll();
       }
-      layoutModeType = newMode;
-      updateLayoutToggle();
-      layoutDirty = true;
-      renderAll();
     });
   });
 
@@ -1130,9 +1136,16 @@
   let dragState = null;
   function initDrag() {
     previewArea.addEventListener('pointerdown', e => {
-      if (layoutModeType !== 'manual') return;
-      const slot = e.target.closest('.ppt-slot');
+      let slot = e.target.closest('.ppt-slot');
       if (!slot) return;
+      // Auto-switch to manual mode when dragging in auto mode
+      if (layoutModeType !== 'manual') {
+        const targetCopyKey = slot.dataset.copyKey;
+        if (!targetCopyKey) return;
+        switchToManual();
+        slot = previewArea.querySelector('[data-copy-key="' + targetCopyKey + '"]');
+        if (!slot) return;
+      }
       e.preventDefault();
       const copyKey = slot.dataset.copyKey;
       if (!copyKey) return;
@@ -1600,7 +1613,7 @@
         hCtx.fillStyle = '#272019';
         hCtx.font = '600 9px monospace';
         hCtx.textAlign = 'center';
-        hCtx.fillText(mm + '', x, 12);
+        hCtx.fillText((mm / 10) + '', x, 12);
       }
     }
 
@@ -1639,7 +1652,7 @@
         vCtx.translate(12, y);
         vCtx.rotate(-Math.PI / 2);
         vCtx.textAlign = 'center';
-        vCtx.fillText(mm + '', 0, 0);
+        vCtx.fillText((mm / 10) + '', 0, 0);
         vCtx.restore();
       }
     }
@@ -1658,7 +1671,7 @@
       RULER_CURSOR_V.style.display = '';
       RULER_CURSOR_V.style.left = relX + 'px';
       RULER_LABEL_H.style.display = '';
-      RULER_LABEL_H.textContent = mmX.toFixed(1) + 'mm';
+      RULER_LABEL_H.textContent = (mmX / 10).toFixed(1) + 'cm';
       RULER_LABEL_H.style.left = relX + 'px';
     } else {
       RULER_CURSOR_V.style.display = 'none';
@@ -1672,7 +1685,7 @@
       RULER_CURSOR_H.style.display = '';
       RULER_CURSOR_H.style.top = relY + 'px';
       RULER_LABEL_V.style.display = '';
-      RULER_LABEL_V.textContent = mmY.toFixed(1) + 'mm';
+      RULER_LABEL_V.textContent = (mmY / 10).toFixed(1) + 'cm';
       RULER_LABEL_V.style.top = relY + 'px';
     } else {
       RULER_CURSOR_H.style.display = 'none';
@@ -1727,7 +1740,7 @@
 
   function renderGuides() {
     GUIDES_EL.innerHTML = '';
-    const { pxPerMm } = getA4Scale();
+    const { pxPerMm, a4Left, a4Top } = getA4Scale();
     const a4 = previewArea.querySelector('.ppt-a4');
     if (!a4) return;
 
@@ -1739,9 +1752,9 @@
       el.tabIndex = 0;
 
       if (g.type === 'h') {
-        el.style.top = (g.pos * pxPerMm) + 'px';
+        el.style.top = (a4Top + g.pos * pxPerMm) + 'px';
       } else {
-        el.style.left = (g.pos * pxPerMm) + 'px';
+        el.style.left = (a4Left + g.pos * pxPerMm) + 'px';
       }
 
       // Drag to reposition
@@ -1780,11 +1793,11 @@
     if (guide.type === 'h') {
       const relY = e.clientY - a4Rect.top;
       guide.pos = Math.max(0, Math.min(PH, relY / pxPerMm));
-      guideDragging.el.style.top = (guide.pos * pxPerMm) + 'px';
+      guideDragging.el.style.top = (a4Top + guide.pos * pxPerMm) + 'px';
     } else {
       const relX = e.clientX - a4Rect.left;
       guide.pos = Math.max(0, Math.min(PW, relX / pxPerMm));
-      guideDragging.el.style.left = (guide.pos * pxPerMm) + 'px';
+      guideDragging.el.style.left = (a4Left + guide.pos * pxPerMm) + 'px';
     }
     guideDragging.el.dataset.pos = guide.pos.toFixed(1) + 'mm';
   });
