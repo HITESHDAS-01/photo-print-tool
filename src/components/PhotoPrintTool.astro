@@ -128,6 +128,12 @@
 
     <!-- Center — A4 Preview -->
     <main class="ppt-preview" id="previewArea">
+      <!-- Rulers -->
+      <div class="ppt-ruler-corner" id="rulerCorner"></div>
+      <div class="ppt-ruler-h" id="rulerH"><canvas id="rulerHCanvas"></canvas><div class="ppt-ruler-cursor-v" id="rulerCursorV"></div><div class="ppt-ruler-label" id="rulerLabelH"></div></div>
+      <div class="ppt-ruler-v" id="rulerV"><canvas id="rulerVCanvas"></canvas><div class="ppt-ruler-cursor-h" id="rulerCursorH"></div><div class="ppt-ruler-label" id="rulerLabelV"></div></div>
+      <!-- Guides -->
+      <div class="ppt-guides" id="guidesContainer"></div>
       <div class="ppt-empty-msg" id="noPhotosMsg">
         <span class="ppt-empty-icon">🖼️</span>
         Preview will appear here.<br>Upload photos from the sidebar to get started.
@@ -777,6 +783,8 @@
   }
 
   photoList.addEventListener('click', e => {
+    // Skip interactive elements — they handle their own events
+    if (e.target.closest('select, input, textarea')) return;
     // Skip if this was handled by the fit toggle handler above
     if (e.target.closest('.ppt-fit-btn')) return;
     const t = e.target.closest('[data-id]');
@@ -1012,6 +1020,8 @@
       box.style.height = (PH_PX * s) + 'px';
       a4.style.transform = 'scale(' + s + ')';
     });
+    if (typeof renderRulers === 'function') renderRulers();
+    if (typeof renderGuides === 'function') renderGuides();
   }
 
   function updateDimensions() {
@@ -1522,6 +1532,288 @@
       toast('All photos cleared. Use Undo to restore.');
     }
   });
+
+  // ── Rulers ──
+  const RULER_H = $('rulerH');
+  const RULER_V = $('rulerV');
+  const RULER_HC = $('rulerHCanvas');
+  const RULER_VC = $('rulerVCanvas');
+  const RULER_CURSOR_H = $('rulerCursorH');
+  const RULER_CURSOR_V = $('rulerCursorV');
+  const RULER_LABEL_H = $('rulerLabelH');
+  const RULER_LABEL_V = $('rulerLabelV');
+  const GUIDES_EL = $('guidesContainer');
+  let guides = [];
+  let nextGuideId = 0;
+  let guideDragging = null;
+
+  function getA4Scale() {
+    const a4 = previewArea.querySelector('.ppt-a4');
+    if (!a4) return { pxPerMm: 3.78, a4Left: 0, a4Top: 0 };
+    const box = a4.closest('.ppt-scale-box');
+    const s = box ? (parseFloat(box.style.width) || PW_PX) / PW_PX : 1;
+    const pxPerMm = (PW_PX * s) / PW;
+    const previewRect = previewArea.getBoundingClientRect();
+    const boxRect = box ? box.getBoundingClientRect() : a4.getBoundingClientRect();
+    return { pxPerMm, a4Left: boxRect.left - previewRect.left, a4Top: boxRect.top - previewRect.top };
+  }
+
+  function renderRulers() {
+    const { pxPerMm, a4Left, a4Top } = getA4Scale();
+    const dpr = window.devicePixelRatio || 1;
+
+    // Horizontal ruler
+    const hEl = RULER_H;
+    const hW = hEl.clientWidth;
+    const hH = 36;
+    RULER_HC.width = hW * dpr;
+    RULER_HC.height = hH * dpr;
+    RULER_HC.style.width = hW + 'px';
+    RULER_HC.style.height = hH + 'px';
+    const hCtx = RULER_HC.getContext('2d');
+    hCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    hCtx.clearRect(0, 0, hW, hH);
+    hCtx.fillStyle = '#fff';
+    hCtx.fillRect(0, 0, hW, hH);
+
+    const offsetXPx = Math.max(0, a4Left);
+    for (let mm = 0; mm <= PW; mm++) {
+      const x = offsetXPx + mm * pxPerMm;
+      if (x > hW + 10) break;
+      let h;
+      if (mm % 10 === 0) h = 14;
+      else if (mm % 5 === 0) h = 10;
+      else h = 5;
+      hCtx.beginPath();
+      hCtx.moveTo(x, hH);
+      hCtx.lineTo(x, hH - h);
+      hCtx.strokeStyle = mm % 10 === 0 ? '#272019' : 'rgba(39,32,25,0.35)';
+      hCtx.lineWidth = mm % 10 === 0 ? 1 : 0.5;
+      hCtx.stroke();
+      if (mm % 10 === 0) {
+        hCtx.fillStyle = '#272019';
+        hCtx.font = '600 9px monospace';
+        hCtx.textAlign = 'center';
+        hCtx.fillText(mm + '', x, 12);
+      }
+    }
+
+    // Vertical ruler
+    const vEl = RULER_V;
+    const vW = 36;
+    const vH = vEl.clientHeight;
+    RULER_VC.width = vW * dpr;
+    RULER_VC.height = vH * dpr;
+    RULER_VC.style.width = vW + 'px';
+    RULER_VC.style.height = vH + 'px';
+    const vCtx = RULER_VC.getContext('2d');
+    vCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    vCtx.clearRect(0, 0, vW, vH);
+    vCtx.fillStyle = '#fff';
+    vCtx.fillRect(0, 0, vW, vH);
+
+    const offsetYPx = Math.max(0, a4Top);
+    for (let mm = 0; mm <= PH; mm++) {
+      const y = offsetYPx + mm * pxPerMm;
+      if (y > vH + 10) break;
+      let w;
+      if (mm % 10 === 0) w = 14;
+      else if (mm % 5 === 0) w = 10;
+      else w = 5;
+      vCtx.beginPath();
+      vCtx.moveTo(vW, y);
+      vCtx.lineTo(vW - w, y);
+      vCtx.strokeStyle = mm % 10 === 0 ? '#272019' : 'rgba(39,32,25,0.35)';
+      vCtx.lineWidth = mm % 10 === 0 ? 1 : 0.5;
+      vCtx.stroke();
+      if (mm % 10 === 0) {
+        vCtx.save();
+        vCtx.fillStyle = '#272019';
+        vCtx.font = '600 9px monospace';
+        vCtx.translate(12, y);
+        vCtx.rotate(-Math.PI / 2);
+        vCtx.textAlign = 'center';
+        vCtx.fillText(mm + '', 0, 0);
+        vCtx.restore();
+      }
+    }
+  }
+
+  // ── Cursor tracking on rulers ──
+  previewArea.addEventListener('mousemove', e => {
+    if (!photos.length) return;
+    const { pxPerMm, a4Left, a4Top } = getA4Scale();
+    const previewRect = previewArea.getBoundingClientRect();
+
+    // Horizontal cursor line (tracks mouse X on horizontal ruler)
+    const relX = e.clientX - previewRect.left;
+    const mmX = Math.round(((relX - a4Left) / pxPerMm) * 10) / 10;
+    if (relX > 36 && mmX >= 0 && mmX <= PW) {
+      RULER_CURSOR_V.style.display = '';
+      RULER_CURSOR_V.style.left = relX + 'px';
+      RULER_LABEL_H.style.display = '';
+      RULER_LABEL_H.textContent = mmX.toFixed(1) + 'mm';
+      RULER_LABEL_H.style.left = relX + 'px';
+    } else {
+      RULER_CURSOR_V.style.display = 'none';
+      RULER_LABEL_H.style.display = 'none';
+    }
+
+    // Vertical cursor line (tracks mouse Y on vertical ruler)
+    const relY = e.clientY - previewRect.top;
+    const mmY = Math.round(((relY - a4Top) / pxPerMm) * 10) / 10;
+    if (relY > 36 && mmY >= 0 && mmY <= PH) {
+      RULER_CURSOR_H.style.display = '';
+      RULER_CURSOR_H.style.top = relY + 'px';
+      RULER_LABEL_V.style.display = '';
+      RULER_LABEL_V.textContent = mmY.toFixed(1) + 'mm';
+      RULER_LABEL_V.style.top = relY + 'px';
+    } else {
+      RULER_CURSOR_H.style.display = 'none';
+      RULER_LABEL_V.style.display = 'none';
+    }
+  });
+
+  previewArea.addEventListener('mouseleave', () => {
+    RULER_CURSOR_H.style.display = 'none';
+    RULER_CURSOR_V.style.display = 'none';
+    RULER_LABEL_H.style.display = 'none';
+    RULER_LABEL_V.style.display = 'none';
+  });
+
+  // ── Guide creation from ruler click ──
+  RULER_H.addEventListener('click', e => {
+    if (!photos.length) return;
+    const { pxPerMm, a4Left } = getA4Scale();
+    const previewRect = previewArea.getBoundingClientRect();
+    const relX = e.clientX - previewRect.left;
+    const mm = Math.round(((relX - a4Left) / pxPerMm) * 10) / 10;
+    if (mm >= 0 && mm <= PW) {
+      pushUndo();
+      createGuide('v', mm);
+    }
+  });
+
+  RULER_V.addEventListener('click', e => {
+    if (!photos.length) return;
+    const { pxPerMm, a4Top } = getA4Scale();
+    const previewRect = previewArea.getBoundingClientRect();
+    const relY = e.clientY - previewRect.top;
+    const mm = Math.round(((relY - a4Top) / pxPerMm) * 10) / 10;
+    if (mm >= 0 && mm <= PH) {
+      pushUndo();
+      createGuide('h', mm);
+    }
+  });
+
+  function createGuide(type, posMm) {
+    const id = nextGuideId++;
+    guides.push({ id, type, pos: posMm });
+    renderGuides();
+    toast((type === 'h' ? 'Horizontal' : 'Vertical') + ' guide at ' + posMm.toFixed(1) + 'mm — double-click to remove');
+  }
+
+  function removeGuide(id) {
+    guides = guides.filter(g => g.id !== id);
+    renderGuides();
+    toast('Guide removed');
+  }
+
+  function renderGuides() {
+    GUIDES_EL.innerHTML = '';
+    const { pxPerMm } = getA4Scale();
+    const a4 = previewArea.querySelector('.ppt-a4');
+    if (!a4) return;
+
+    guides.forEach(g => {
+      const el = document.createElement('div');
+      el.className = 'ppt-guide ppt-guide-' + g.type;
+      el.dataset.id = g.id;
+      el.dataset.pos = g.pos.toFixed(1) + 'mm';
+      el.tabIndex = 0;
+
+      if (g.type === 'h') {
+        el.style.top = (g.pos * pxPerMm) + 'px';
+      } else {
+        el.style.left = (g.pos * pxPerMm) + 'px';
+      }
+
+      // Drag to reposition
+      el.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        el.setPointerCapture(e.pointerId);
+        guideDragging = {
+          id: g.id, type: g.type, el,
+          startMouse: g.type === 'h' ? e.clientY : e.clientX,
+          startPos: g.pos
+        };
+        el.classList.add('ppt-guide-dragging');
+      });
+
+      // Double-click to delete
+      el.addEventListener('dblclick', e => {
+        e.stopPropagation();
+        removeGuide(g.id);
+      });
+
+      GUIDES_EL.appendChild(el);
+    });
+  }
+
+  // ── Guide dragging ──
+  document.addEventListener('pointermove', e => {
+    if (!guideDragging) return;
+    const { pxPerMm, a4Left, a4Top } = getA4Scale();
+    const a4 = previewArea.querySelector('.ppt-a4');
+    if (!a4) return;
+    const a4Rect = a4.getBoundingClientRect();
+    const guide = guides.find(g => g.id === guideDragging.id);
+    if (!guide) return;
+
+    if (guide.type === 'h') {
+      const relY = e.clientY - a4Rect.top;
+      guide.pos = Math.max(0, Math.min(PH, relY / pxPerMm));
+      guideDragging.el.style.top = (guide.pos * pxPerMm) + 'px';
+    } else {
+      const relX = e.clientX - a4Rect.left;
+      guide.pos = Math.max(0, Math.min(PW, relX / pxPerMm));
+      guideDragging.el.style.left = (guide.pos * pxPerMm) + 'px';
+    }
+    guideDragging.el.dataset.pos = guide.pos.toFixed(1) + 'mm';
+  });
+
+  document.addEventListener('pointerup', () => {
+    if (guideDragging) {
+      guideDragging.el.classList.remove('ppt-guide-dragging');
+      guideDragging = null;
+      renderGuides();
+    }
+  });
+
+  // Delete guide with Delete/Backspace when focused
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      const focused = document.activeElement;
+      if (focused && focused.classList.contains('ppt-guide')) {
+        e.preventDefault();
+        removeGuide(parseInt(focused.dataset.id));
+      }
+    }
+  });
+
+  // ── Ruler toggle via Hide Guides button ──
+  const origHideGuidesClick = hideGuidesBtn.onclick;
+  hideGuidesBtn.addEventListener('click', () => {
+    const showRulers = guidesVisible;
+    RULER_H.style.display = showRulers ? '' : 'none';
+    RULER_V.style.display = showRulers ? '' : 'none';
+    $('rulerCorner').style.display = showRulers ? '' : 'none';
+    GUIDES_EL.style.display = showRulers ? '' : 'none';
+  });
+
+  // ── Window resize → re-render rulers ──
+  window.addEventListener('resize', () => { renderRulers(); renderGuides(); });
 
   updateUndoRedoButtons();
   renderAll();
