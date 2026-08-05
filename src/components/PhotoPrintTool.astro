@@ -899,9 +899,9 @@
         const group4 = document.createElement('div');
         group4.className = 'ppt-card-group';
         const adjustments = [
-          { key: 'brightness', label: 'B', min: -100, max: 100, prop: 'brightness' },
-          { key: 'contrast', label: 'C', min: -100, max: 100, prop: 'contrast' },
-          { key: 'saturation', label: 'S', min: -100, max: 100, prop: 'saturation' }
+          { key: 'brightness', label: '☀', title: 'Brightness', min: -100, max: 100, prop: 'brightness' },
+          { key: 'contrast', label: '◐', title: 'Contrast', min: -100, max: 100, prop: 'contrast' },
+          { key: 'saturation', label: '💧', title: 'Saturation', min: -100, max: 100, prop: 'saturation' }
         ];
         adjustments.forEach(adj => {
           const row = document.createElement('div');
@@ -910,6 +910,7 @@
           const label = document.createElement('span');
           label.className = 'ppt-pos-label';
           label.style.minWidth = '12px';
+          label.title = adj.title;
           label.textContent = adj.label;
           row.appendChild(label);
           const slider = document.createElement('input');
@@ -920,7 +921,8 @@
           slider.value = p[adj.prop] || 0;
           slider.dataset.id = p.id;
           slider.dataset.prop = adj.prop;
-          slider.setAttribute('aria-label', adj.label);
+          slider.setAttribute('aria-label', adj.title);
+          slider.title = adj.title;
           row.appendChild(slider);
           const val = document.createElement('span');
           val.className = 'ppt-slider-val ppt-adj-val';
@@ -937,6 +939,7 @@
         const resetBtn = document.createElement('button');
         resetBtn.className = 'ppt-mini-btn resetAdjBtn';
         resetBtn.dataset.id = p.id;
+        resetBtn.title = 'Reset all adjustments';
         resetBtn.textContent = 'Reset';
         resetRow.appendChild(resetBtn);
         group4.appendChild(resetRow);
@@ -954,8 +957,9 @@
         borderRow.style.alignItems = 'center';
         const bdrWLabel = document.createElement('span');
         bdrWLabel.className = 'ppt-pos-label';
-        bdrWLabel.style.minWidth = '14px';
-        bdrWLabel.textContent = 'Bw';
+        bdrWLabel.style.minWidth = '12px';
+        bdrWLabel.title = 'Border Width';
+        bdrWLabel.textContent = '◻';
         borderRow.appendChild(bdrWLabel);
         const borderSlider = document.createElement('input');
         borderSlider.type = 'range';
@@ -966,7 +970,8 @@
         borderSlider.value = p.borderWidth || 0;
         borderSlider.dataset.id = p.id;
         borderSlider.dataset.prop = 'borderWidth';
-        borderSlider.setAttribute('aria-label', 'Border width');
+        borderSlider.setAttribute('aria-label', 'Border Width');
+        borderSlider.title = 'Border Width';
         borderRow.appendChild(borderSlider);
         const borderVal = document.createElement('span');
         borderVal.className = 'ppt-slider-val ppt-border-val';
@@ -976,7 +981,8 @@
         const brLabel = document.createElement('span');
         brLabel.className = 'ppt-pos-label';
         brLabel.style.minWidth = '10px';
-        brLabel.textContent = 'R';
+        brLabel.title = 'Corner Radius';
+        brLabel.textContent = '◎';
         borderRow.appendChild(brLabel);
         const radiusSlider = document.createElement('input');
         radiusSlider.type = 'range';
@@ -987,7 +993,8 @@
         radiusSlider.value = p.borderRadius || 0;
         radiusSlider.dataset.id = p.id;
         radiusSlider.dataset.prop = 'borderRadius';
-        radiusSlider.setAttribute('aria-label', 'Border radius');
+        radiusSlider.setAttribute('aria-label', 'Corner Radius');
+        radiusSlider.title = 'Corner Radius';
         borderRow.appendChild(radiusSlider);
         const radiusVal = document.createElement('span');
         radiusVal.className = 'ppt-slider-val ppt-border-val';
@@ -1001,9 +1008,9 @@
         borderColorRow.className = 'ppt-row ppt-row-compact';
         borderColorRow.style.alignItems = 'center';
         const borderColors = [
-          { color: '#ffffff', label: 'W' },
-          { color: '#000000', label: 'B' },
-          { color: 'none', label: 'None' }
+          { color: '#ffffff', label: '◻', title: 'White Border' },
+          { color: '#000000', label: '◼', title: 'Black Border' },
+          { color: 'none', label: '✕', title: 'No Border' }
         ];
         borderColors.forEach(bc => {
           const cb = document.createElement('button');
@@ -1012,7 +1019,7 @@
           cb.dataset.bordercolor = bc.color;
           cb.dataset.id = p.id;
           cb.textContent = bc.label;
-          cb.title = bc.color === 'none' ? 'No border color' : bc.color;
+          cb.title = bc.title;
           borderColorRow.appendChild(cb);
         });
         const borderColorPicker = document.createElement('input');
@@ -1021,7 +1028,7 @@
         borderColorPicker.dataset.id = p.id;
         borderColorPicker.dataset.prop = 'borderColor';
         borderColorPicker.value = (p.borderColor && p.borderColor !== 'none') ? p.borderColor : '#ffffff';
-        borderColorPicker.title = 'Custom border color';
+        borderColorPicker.title = 'Custom Border Color';
         borderColorRow.appendChild(borderColorPicker);
         group5.appendChild(borderColorRow);
         meta.appendChild(group5);
