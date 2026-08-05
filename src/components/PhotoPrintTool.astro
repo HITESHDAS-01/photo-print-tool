@@ -899,9 +899,9 @@
         const group4 = document.createElement('div');
         group4.className = 'ppt-card-group';
         const adjustments = [
-          { key: 'brightness', label: 'Bri', min: -100, max: 100, prop: 'brightness' },
-          { key: 'contrast', label: 'Con', min: -100, max: 100, prop: 'contrast' },
-          { key: 'saturation', label: 'Sat', min: -100, max: 100, prop: 'saturation' }
+          { key: 'brightness', label: 'B', min: -100, max: 100, prop: 'brightness' },
+          { key: 'contrast', label: 'C', min: -100, max: 100, prop: 'contrast' },
+          { key: 'saturation', label: 'S', min: -100, max: 100, prop: 'saturation' }
         ];
         adjustments.forEach(adj => {
           const row = document.createElement('div');
@@ -909,7 +909,7 @@
           row.style.alignItems = 'center';
           const label = document.createElement('span');
           label.className = 'ppt-pos-label';
-          label.style.minWidth = '24px';
+          label.style.minWidth = '12px';
           label.textContent = adj.label;
           row.appendChild(label);
           const slider = document.createElement('input');
@@ -930,7 +930,7 @@
           row.appendChild(val);
           group4.appendChild(row);
         });
-        // Reset adjustments button
+        // Reset adjustments button (inline, small)
         const resetRow = document.createElement('div');
         resetRow.className = 'ppt-row ppt-row-compact';
         resetRow.style.justifyContent = 'flex-end';
@@ -945,18 +945,18 @@
         const div4 = document.createElement('div');
         div4.className = 'ppt-card-divider';
         meta.appendChild(div4);
-        // Group 5: Border / Frame
+        // Group 5: Border / Frame (compact)
         const group5 = document.createElement('div');
         group5.className = 'ppt-card-group';
-        // Border width row
+        // Row 1: Border width + Radius sliders
         const borderRow = document.createElement('div');
         borderRow.className = 'ppt-row ppt-row-compact';
         borderRow.style.alignItems = 'center';
-        const bdrLabel = document.createElement('span');
-        bdrLabel.className = 'ppt-pos-label';
-        bdrLabel.style.minWidth = '32px';
-        bdrLabel.textContent = 'Border';
-        borderRow.appendChild(bdrLabel);
+        const bdrWLabel = document.createElement('span');
+        bdrWLabel.className = 'ppt-pos-label';
+        bdrWLabel.style.minWidth = '14px';
+        bdrWLabel.textContent = 'Bw';
+        borderRow.appendChild(bdrWLabel);
         const borderSlider = document.createElement('input');
         borderSlider.type = 'range';
         borderSlider.className = 'ppt-slider ppt-border-slider';
@@ -973,17 +973,33 @@
         borderVal.dataset.id = p.id;
         borderVal.textContent = (p.borderWidth || 0) + 'mm';
         borderRow.appendChild(borderVal);
+        const brLabel = document.createElement('span');
+        brLabel.className = 'ppt-pos-label';
+        brLabel.style.minWidth = '10px';
+        brLabel.textContent = 'R';
+        borderRow.appendChild(brLabel);
+        const radiusSlider = document.createElement('input');
+        radiusSlider.type = 'range';
+        radiusSlider.className = 'ppt-slider ppt-border-slider';
+        radiusSlider.min = '0';
+        radiusSlider.max = '10';
+        radiusSlider.step = '1';
+        radiusSlider.value = p.borderRadius || 0;
+        radiusSlider.dataset.id = p.id;
+        radiusSlider.dataset.prop = 'borderRadius';
+        radiusSlider.setAttribute('aria-label', 'Border radius');
+        borderRow.appendChild(radiusSlider);
+        const radiusVal = document.createElement('span');
+        radiusVal.className = 'ppt-slider-val ppt-border-val';
+        radiusVal.dataset.id = p.id;
+        radiusVal.dataset.prop = 'borderRadius';
+        radiusVal.textContent = (p.borderRadius || 0) + 'mm';
+        borderRow.appendChild(radiusVal);
         group5.appendChild(borderRow);
-        // Border color + radius row
-        const borderStyleRow = document.createElement('div');
-        borderStyleRow.className = 'ppt-row ppt-row-compact';
-        borderStyleRow.style.alignItems = 'center';
-        borderStyleRow.style.gap = '4px';
-        const colorLabel = document.createElement('span');
-        colorLabel.className = 'ppt-pos-label';
-        colorLabel.textContent = 'Color';
-        borderStyleRow.appendChild(colorLabel);
-        // Preset color buttons
+        // Row 2: Color buttons + color picker
+        const borderColorRow = document.createElement('div');
+        borderColorRow.className = 'ppt-row ppt-row-compact';
+        borderColorRow.style.alignItems = 'center';
         const borderColors = [
           { color: '#ffffff', label: 'W' },
           { color: '#000000', label: 'B' },
@@ -997,7 +1013,7 @@
           cb.dataset.id = p.id;
           cb.textContent = bc.label;
           cb.title = bc.color === 'none' ? 'No border color' : bc.color;
-          borderStyleRow.appendChild(cb);
+          borderColorRow.appendChild(cb);
         });
         const borderColorPicker = document.createElement('input');
         borderColorPicker.type = 'color';
@@ -1006,32 +1022,8 @@
         borderColorPicker.dataset.prop = 'borderColor';
         borderColorPicker.value = (p.borderColor && p.borderColor !== 'none') ? p.borderColor : '#ffffff';
         borderColorPicker.title = 'Custom border color';
-        borderStyleRow.appendChild(borderColorPicker);
-        // Radius
-        const radiusLabel = document.createElement('span');
-        radiusLabel.className = 'ppt-pos-label';
-        radiusLabel.style.marginLeft = '4px';
-        radiusLabel.textContent = 'R';
-        borderStyleRow.appendChild(radiusLabel);
-        const radiusSlider = document.createElement('input');
-        radiusSlider.type = 'range';
-        radiusSlider.className = 'ppt-slider ppt-border-slider';
-        radiusSlider.min = '0';
-        radiusSlider.max = '10';
-        radiusSlider.step = '1';
-        radiusSlider.value = p.borderRadius || 0;
-        radiusSlider.dataset.id = p.id;
-        radiusSlider.dataset.prop = 'borderRadius';
-        radiusSlider.setAttribute('aria-label', 'Border radius');
-        radiusSlider.style.width = '50px';
-        borderStyleRow.appendChild(radiusSlider);
-        const radiusVal = document.createElement('span');
-        radiusVal.className = 'ppt-slider-val ppt-border-val';
-        radiusVal.dataset.id = p.id;
-        radiusVal.dataset.prop = 'borderRadius';
-        radiusVal.textContent = (p.borderRadius || 0) + 'mm';
-        borderStyleRow.appendChild(radiusVal);
-        group5.appendChild(borderStyleRow);
+        borderColorRow.appendChild(borderColorPicker);
+        group5.appendChild(borderColorRow);
         meta.appendChild(group5);
       }
 
