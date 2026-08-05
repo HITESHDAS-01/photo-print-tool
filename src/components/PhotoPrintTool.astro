@@ -66,25 +66,30 @@
         Compare
       </button>
     </div>
-    <div class="ppt-toolbar-right">
-      <div class="ppt-layout-toggle" id="layoutModeToggle">
-        <button class="ppt-layout-btn active" data-mode="auto">Auto-fill</button>
-        <button class="ppt-layout-btn" data-mode="manual">Manual</button>
+      <div class="ppt-toolbar-right">
+        <div class="ppt-batch-actions" id="batchActions">
+          <button class="ppt-tool-btn" id="batchApplySizeBtn" title="Apply selected size to all photos">Apply Size to All</button>
+          <button class="ppt-tool-btn" id="batchApplyFitBtn" title="Apply selected fit mode to all photos">Apply Fit to All</button>
+          <button class="ppt-tool-btn" id="batchApplyAdjBtn" title="Apply current adjustments to all photos">Apply Adj to All</button>
+        </div>
+        <div class="ppt-layout-toggle" id="layoutModeToggle">
+          <button class="ppt-layout-btn active" data-mode="auto">Auto-fill</button>
+          <button class="ppt-layout-btn" data-mode="manual">Manual</button>
+        </div>
+        <select class="ppt-size-select" id="sizePresetSelect">
+          <option value="passport">Passport (3.5×4.5cm)</option>
+          <option value="stamp">Stamp (2×2.5cm)</option>
+          <option value="panphoto">PAN Photo (2.5×3.5cm)</option>
+          <option value="visa2x2">US Visa (2×2 inch)</option>
+          <option value="idcard">ID Card CR-80</option>
+          <option value="postcard">Postcard (4×6 inch)</option>
+          <option value="custom">Custom</option>
+        </select>
+        <button class="ppt-download-btn" id="downloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download
+        </button>
       </div>
-      <select class="ppt-size-select" id="sizePresetSelect">
-        <option value="passport">Passport (3.5×4.5cm)</option>
-        <option value="stamp">Stamp (2×2.5cm)</option>
-        <option value="panphoto">PAN Photo (2.5×3.5cm)</option>
-        <option value="visa2x2">US Visa (2×2 inch)</option>
-        <option value="idcard">ID Card CR-80</option>
-        <option value="postcard">Postcard (4×6 inch)</option>
-        <option value="custom">Custom</option>
-      </select>
-      <button class="ppt-download-btn" id="downloadBtn">
-        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Download
-      </button>
-    </div>
   </div>
 
   <!-- Main body: 3-column -->
@@ -442,7 +447,10 @@
         sizeKey: p.sizeKey, customW: p.customW, customH: p.customH,
         copies: p.copies, rotation: p.rotation || 0, straighten: p.straighten || 0,
         fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50,
-        cropX: p.cropX ?? 0, cropY: p.cropY ?? 0, cropW: p.cropW ?? 100, cropH: p.cropH ?? 100
+        cropX: p.cropX ?? 0, cropY: p.cropY ?? 0, cropW: p.cropW ?? 100, cropH: p.cropH ?? 100,
+        bgColor: p.bgColor || '#ffffff',
+        brightness: p.brightness || 0, contrast: p.contrast || 0, saturation: p.saturation || 0,
+        borderWidth: p.borderWidth || 0, borderColor: p.borderColor || '#ffffff', borderRadius: p.borderRadius || 0
       })),
       nextId,
       margin: pageMargin.value,
@@ -475,7 +483,10 @@
       sizeKey: sp.sizeKey, customW: sp.customW, customH: sp.customH,
       copies: sp.copies, rotation: sp.rotation || 0, straighten: sp.straighten || 0,
       fitMode: sp.fitMode || 'cover', posX: sp.posX ?? 50, posY: sp.posY ?? 50,
-      cropX: sp.cropX ?? 0, cropY: sp.cropY ?? 0, cropW: sp.cropW ?? 100, cropH: sp.cropH ?? 100
+      cropX: sp.cropX ?? 0, cropY: sp.cropY ?? 0, cropW: sp.cropW ?? 100, cropH: sp.cropH ?? 100,
+      bgColor: sp.bgColor || '#ffffff',
+      brightness: sp.brightness || 0, contrast: sp.contrast || 0, saturation: sp.saturation || 0,
+      borderWidth: sp.borderWidth || 0, borderColor: sp.borderColor || '#ffffff', borderRadius: sp.borderRadius || 0
     }));
     // Restore layout mode
     if (state.layoutModeType) {
@@ -523,7 +534,7 @@
       if (photos.length >= MAX_PHOTOS) break;
       try {
         const src = await downscale(file, MAX_DIM);
-        const p = { id: nextId++, src: src, originalSrc: src, name: file.name || 'Photo ' + nextId, sizeKey: 'passport', customW: 35, customH: 45, copies: 1, rotation: 0, straighten: 0, fitMode: 'cover', posX: 50, posY: 50, cropX: 0, cropY: 0, cropW: 100, cropH: 100 };
+        const p = { id: nextId++, src: src, originalSrc: src, name: file.name || 'Photo ' + nextId, sizeKey: 'passport', customW: 35, customH: 45, copies: 1, rotation: 0, straighten: 0, fitMode: 'cover', posX: 50, posY: 50, cropX: 0, cropY: 0, cropW: 100, cropH: 100, bgColor: '#ffffff', brightness: 0, contrast: 0, saturation: 0, borderWidth: 0, borderColor: '#ffffff', borderRadius: 0 };
         photos.push(p);
         if (layoutModeType === 'manual') {
           copyPositions[p.id + '-0'] = { x: nextPlaceX, y: nextPlaceY };
@@ -600,7 +611,7 @@
         for (let i = 0; i < p.copies; i++) {
           const key = p.id + '-' + i;
           const pos = copyPositions[key] || { x: mg + (copyIdx % 8) * (s.w + gp), y: mg + Math.floor(copyIdx / 8) * (s.h + gp) };
-          const item = { src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50, x: pos.x, y: pos.y, copyKey: key };
+          const item = { src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50, x: pos.x, y: pos.y, copyKey: key, brightness: p.brightness || 0, contrast: p.contrast || 0, saturation: p.saturation || 0 };
           pages[0].push({ items: [item], height: s.h });
           copyIdx++;
         }
@@ -610,7 +621,7 @@
 
     // Auto-fill mode (existing shelf-packing)
     const items = [];
-    photos.forEach(p => { const s = getSizeMM(p); for (let i = 0; i < p.copies; i++) items.push({ src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50, copyKey: p.id + '-' + i }); });
+    photos.forEach(p => { const s = getSizeMM(p); for (let i = 0; i < p.copies; i++) items.push({ src: p.src, w: s.w, h: s.h, rotation: p.rotation || 0, straighten: p.straighten || 0, fitMode: p.fitMode || 'cover', posX: p.posX ?? 50, posY: p.posY ?? 50, copyKey: p.id + '-' + i, brightness: p.brightness || 0, contrast: p.contrast || 0, saturation: p.saturation || 0 }); });
     const pages = [];
     let curPage = [], rowItems = [], rowW = 0, rowH = 0, pageH = 0, rows = 0;
     function flushRow() {
@@ -820,7 +831,7 @@
         const div2 = document.createElement('div');
         div2.className = 'ppt-card-divider';
         meta.appendChild(div2);
-        // Group 3: Fill Page + Rotation + Delete
+        // Group 3: Fill Page + Rotation + Remove BG + Delete
         const group3 = document.createElement('div');
         group3.className = 'ppt-card-group';
         const row2 = document.createElement('div');
@@ -833,13 +844,195 @@
         rotInfo.className = 'ppt-rot-info';
         rotInfo.textContent = (p.rotation || 0) + '\u00b0';
         row2.appendChild(rotInfo);
+        const bgBtn = document.createElement('button');
+        bgBtn.className = 'ppt-mini-btn removeBgBtn'; bgBtn.dataset.id = p.id;
+        bgBtn.title = 'Remove background (client-side ML)'; bgBtn.textContent = 'Remove BG';
+        row2.appendChild(bgBtn);
         const sp = document.createElement('span'); sp.style.flex = '1'; row2.appendChild(sp);
         const rb = document.createElement('button');
         rb.className = 'ppt-remove'; rb.dataset.id = p.id;
         rb.setAttribute('aria-label', 'Remove photo'); rb.textContent = '\u2715';
         row2.appendChild(rb);
         group3.appendChild(row2);
+        // Background color selector row
+        const rowBg = document.createElement('div');
+        rowBg.className = 'ppt-row ppt-row-compact';
+        rowBg.style.display = 'none';
+        rowBg.id = 'bgColorRow-' + p.id;
+        const bgLabel = document.createElement('span');
+        bgLabel.className = 'ppt-pos-label';
+        bgLabel.textContent = 'BG Color:';
+        rowBg.appendChild(bgLabel);
+        const whiteBtn = document.createElement('button');
+        whiteBtn.className = 'ppt-mini-btn ppt-bg-color-btn active';
+        whiteBtn.dataset.bgcolor = '#ffffff';
+        whiteBtn.dataset.id = p.id;
+        whiteBtn.title = 'White background';
+        whiteBtn.textContent = 'White';
+        rowBg.appendChild(whiteBtn);
+        const transparentBtn = document.createElement('button');
+        transparentBtn.className = 'ppt-mini-btn ppt-bg-color-btn';
+        transparentBtn.dataset.bgcolor = 'transparent';
+        transparentBtn.dataset.id = p.id;
+        transparentBtn.title = 'Transparent background';
+        transparentBtn.textContent = 'None';
+        rowBg.appendChild(transparentBtn);
+        const customColorInput = document.createElement('input');
+        customColorInput.type = 'color';
+        customColorInput.className = 'ppt-color-picker';
+        customColorInput.dataset.id = p.id;
+        customColorInput.value = p.bgColor || '#ffffff';
+        customColorInput.title = 'Custom background color';
+        rowBg.appendChild(customColorInput);
+        const applyBgBtn = document.createElement('button');
+        applyBgBtn.className = 'ppt-mini-btn applyBgBtn';
+        applyBgBtn.dataset.id = p.id;
+        applyBgBtn.textContent = 'Apply';
+        rowBg.appendChild(applyBgBtn);
+        group3.appendChild(rowBg);
         meta.appendChild(group3);
+        // Divider
+        const div3 = document.createElement('div');
+        div3.className = 'ppt-card-divider';
+        meta.appendChild(div3);
+        // Group 4: Brightness / Contrast / Saturation
+        const group4 = document.createElement('div');
+        group4.className = 'ppt-card-group';
+        const adjustments = [
+          { key: 'brightness', label: 'Bri', min: -100, max: 100, prop: 'brightness' },
+          { key: 'contrast', label: 'Con', min: -100, max: 100, prop: 'contrast' },
+          { key: 'saturation', label: 'Sat', min: -100, max: 100, prop: 'saturation' }
+        ];
+        adjustments.forEach(adj => {
+          const row = document.createElement('div');
+          row.className = 'ppt-row ppt-row-compact';
+          row.style.alignItems = 'center';
+          const label = document.createElement('span');
+          label.className = 'ppt-pos-label';
+          label.style.minWidth = '24px';
+          label.textContent = adj.label;
+          row.appendChild(label);
+          const slider = document.createElement('input');
+          slider.type = 'range';
+          slider.className = 'ppt-slider ppt-adj-slider';
+          slider.min = adj.min;
+          slider.max = adj.max;
+          slider.value = p[adj.prop] || 0;
+          slider.dataset.id = p.id;
+          slider.dataset.prop = adj.prop;
+          slider.setAttribute('aria-label', adj.label);
+          row.appendChild(slider);
+          const val = document.createElement('span');
+          val.className = 'ppt-slider-val ppt-adj-val';
+          val.dataset.id = p.id;
+          val.dataset.prop = adj.prop;
+          val.textContent = (p[adj.prop] || 0);
+          row.appendChild(val);
+          group4.appendChild(row);
+        });
+        // Reset adjustments button
+        const resetRow = document.createElement('div');
+        resetRow.className = 'ppt-row ppt-row-compact';
+        resetRow.style.justifyContent = 'flex-end';
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'ppt-mini-btn resetAdjBtn';
+        resetBtn.dataset.id = p.id;
+        resetBtn.textContent = 'Reset';
+        resetRow.appendChild(resetBtn);
+        group4.appendChild(resetRow);
+        meta.appendChild(group4);
+        // Divider
+        const div4 = document.createElement('div');
+        div4.className = 'ppt-card-divider';
+        meta.appendChild(div4);
+        // Group 5: Border / Frame
+        const group5 = document.createElement('div');
+        group5.className = 'ppt-card-group';
+        // Border width row
+        const borderRow = document.createElement('div');
+        borderRow.className = 'ppt-row ppt-row-compact';
+        borderRow.style.alignItems = 'center';
+        const bdrLabel = document.createElement('span');
+        bdrLabel.className = 'ppt-pos-label';
+        bdrLabel.style.minWidth = '32px';
+        bdrLabel.textContent = 'Border';
+        borderRow.appendChild(bdrLabel);
+        const borderSlider = document.createElement('input');
+        borderSlider.type = 'range';
+        borderSlider.className = 'ppt-slider ppt-border-slider';
+        borderSlider.min = '0';
+        borderSlider.max = '5';
+        borderSlider.step = '0.5';
+        borderSlider.value = p.borderWidth || 0;
+        borderSlider.dataset.id = p.id;
+        borderSlider.dataset.prop = 'borderWidth';
+        borderSlider.setAttribute('aria-label', 'Border width');
+        borderRow.appendChild(borderSlider);
+        const borderVal = document.createElement('span');
+        borderVal.className = 'ppt-slider-val ppt-border-val';
+        borderVal.dataset.id = p.id;
+        borderVal.textContent = (p.borderWidth || 0) + 'mm';
+        borderRow.appendChild(borderVal);
+        group5.appendChild(borderRow);
+        // Border color + radius row
+        const borderStyleRow = document.createElement('div');
+        borderStyleRow.className = 'ppt-row ppt-row-compact';
+        borderStyleRow.style.alignItems = 'center';
+        borderStyleRow.style.gap = '4px';
+        const colorLabel = document.createElement('span');
+        colorLabel.className = 'ppt-pos-label';
+        colorLabel.textContent = 'Color';
+        borderStyleRow.appendChild(colorLabel);
+        // Preset color buttons
+        const borderColors = [
+          { color: '#ffffff', label: 'W' },
+          { color: '#000000', label: 'B' },
+          { color: 'none', label: 'None' }
+        ];
+        borderColors.forEach(bc => {
+          const cb = document.createElement('button');
+          cb.className = 'ppt-mini-btn ppt-border-color-btn';
+          if ((p.borderColor || '#ffffff') === bc.color) cb.classList.add('active');
+          cb.dataset.bordercolor = bc.color;
+          cb.dataset.id = p.id;
+          cb.textContent = bc.label;
+          cb.title = bc.color === 'none' ? 'No border color' : bc.color;
+          borderStyleRow.appendChild(cb);
+        });
+        const borderColorPicker = document.createElement('input');
+        borderColorPicker.type = 'color';
+        borderColorPicker.className = 'ppt-color-picker';
+        borderColorPicker.dataset.id = p.id;
+        borderColorPicker.dataset.prop = 'borderColor';
+        borderColorPicker.value = (p.borderColor && p.borderColor !== 'none') ? p.borderColor : '#ffffff';
+        borderColorPicker.title = 'Custom border color';
+        borderStyleRow.appendChild(borderColorPicker);
+        // Radius
+        const radiusLabel = document.createElement('span');
+        radiusLabel.className = 'ppt-pos-label';
+        radiusLabel.style.marginLeft = '4px';
+        radiusLabel.textContent = 'R';
+        borderStyleRow.appendChild(radiusLabel);
+        const radiusSlider = document.createElement('input');
+        radiusSlider.type = 'range';
+        radiusSlider.className = 'ppt-slider ppt-border-slider';
+        radiusSlider.min = '0';
+        radiusSlider.max = '10';
+        radiusSlider.step = '1';
+        radiusSlider.value = p.borderRadius || 0;
+        radiusSlider.dataset.id = p.id;
+        radiusSlider.dataset.prop = 'borderRadius';
+        radiusSlider.setAttribute('aria-label', 'Border radius');
+        radiusSlider.style.width = '50px';
+        borderStyleRow.appendChild(radiusSlider);
+        const radiusVal = document.createElement('span');
+        radiusVal.className = 'ppt-slider-val ppt-border-val';
+        radiusVal.dataset.id = p.id;
+        radiusVal.dataset.prop = 'borderRadius';
+        radiusVal.textContent = (p.borderRadius || 0) + 'mm';
+        borderStyleRow.appendChild(radiusVal);
+        group5.appendChild(borderStyleRow);
+        meta.appendChild(group5);
       }
 
       card.appendChild(meta);
@@ -1072,6 +1265,15 @@
           img.style.transform = 'rotate(' + item.straighten + 'deg) scale(' + sf + ')';
         }
         slot.appendChild(img);
+        // Apply border from photo properties
+        const parts2 = (item.copyKey || '').split('-');
+        const pid2 = parseInt(parts2[0]);
+        const photo2 = photos.find(x => x.id === pid2);
+        if (photo2 && photo2.borderWidth > 0 && photo2.borderColor !== 'none') {
+          slot.style.border = photo2.borderWidth + 'mm solid ' + photo2.borderColor;
+          slot.style.borderRadius = (photo2.borderRadius || 0) + 'mm';
+          slot.style.boxSizing = 'border-box';
+        }
         if (guidesVisible) {
           const cut = document.createElement('div'); cut.className = 'ppt-cut'; slot.appendChild(cut);
         }
@@ -1333,7 +1535,9 @@
       photos.forEach(p => {
         p.sizeKey = 'passport'; p.customW = 35; p.customH = 45; p.copies = 1;
         p.rotation = 0; p.straighten = 0; p.fitMode = 'cover'; p.posX = 50; p.posY = 50;
-        p.src = p.originalSrc;
+        p.src = p.originalSrc; p.bgColor = '#ffffff';
+        p.brightness = 0; p.contrast = 0; p.saturation = 0;
+        p.borderWidth = 0; p.borderColor = '#ffffff'; p.borderRadius = 0;
       });
       pageMargin.value = '5'; photoGap.value = '2'; layoutMode.value = 'auto'; maxRowsInput.value = '2';
       maxRowsField.style.display = 'none';
@@ -1561,6 +1765,390 @@
     if (cb) { openCropModal(parseInt(cb.dataset.id)); }
   });
 
+  // ── Background Removal ──
+  let bgRemovalInProgress = false;
+
+  async function removeBackground(photoId, fillColor) {
+    if (bgRemovalInProgress) { toast('Background removal already in progress.'); return; }
+    const p = photos.find(x => x.id === photoId);
+    if (!p) return;
+    bgRemovalInProgress = true;
+    toast('Removing background… this may take a moment.');
+    // Show loading state on button
+    const btn = photoList.querySelector('.removeBgBtn[data-id="' + photoId + '"]');
+    if (btn) { btn.textContent = 'Processing…'; btn.disabled = true; }
+    try {
+      // Dynamically import the library
+      const { removeBackground: removeBg } = await import('@imgly/background-removal');
+      // Convert data URL to Blob
+      const response = await fetch(p.src);
+      const blob = await response.blob();
+      // Remove background
+      const resultBlob = await removeBg(blob, {
+        progress: (key, current, total) => {
+          if (key === 'compute:inference') {
+            const pct = Math.round((current / total) * 100);
+            if (btn) btn.textContent = pct + '%…';
+          }
+        }
+      });
+      // Convert result blob to data URL
+      const reader = new FileReader();
+      const resultUrl = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(resultBlob);
+      });
+      // Apply fill color if not transparent
+      let finalSrc = resultUrl;
+      if (fillColor && fillColor !== 'transparent') {
+        finalSrc = await fillColorOnTransparent(resultUrl, fillColor);
+      }
+      pushUndo();
+      p.src = finalSrc;
+      p.originalSrc = finalSrc;
+      layoutDirty = true;
+      renderAll();
+      toast('Background removed!');
+    } catch (err) {
+      console.error('Background removal failed:', err);
+      toast('Background removal failed. Try a simpler image.');
+    } finally {
+      bgRemovalInProgress = false;
+      if (btn) { btn.textContent = 'Remove BG'; btn.disabled = false; }
+    }
+  }
+
+  function fillColorOnTransparent(src, color) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        c.width = img.width; c.height = img.height;
+        const ctx = c.getContext('2d');
+        // Fill with color
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, c.width, c.height);
+        // Draw transparent image on top
+        ctx.drawImage(img, 0, 0);
+        resolve(c.toDataURL('image/png'));
+      };
+      img.onerror = () => resolve(src);
+      img.src = src;
+    });
+  }
+
+  // Remove BG button click — show color picker row
+  photoList.addEventListener('click', e => {
+    const btn = e.target.closest('.removeBgBtn');
+    if (!btn) return;
+    const id = parseInt(btn.dataset.id);
+    const colorRow = document.getElementById('bgColorRow-' + id);
+    if (colorRow) {
+      const isVisible = colorRow.style.display !== 'none';
+      colorRow.style.display = isVisible ? 'none' : 'flex';
+    }
+  });
+
+  // Background color button clicks
+  photoList.addEventListener('click', e => {
+    const colorBtn = e.target.closest('.ppt-bg-color-btn');
+    if (!colorBtn) return;
+    const id = parseInt(colorBtn.dataset.id);
+    const color = colorBtn.dataset.bgcolor;
+    // Toggle active state
+    const row = colorBtn.closest('.ppt-row-compact');
+    if (row) {
+      row.querySelectorAll('.ppt-bg-color-btn').forEach(b => b.classList.remove('active'));
+      colorBtn.classList.add('active');
+    }
+    // Update color picker if not transparent
+    if (color !== 'transparent') {
+      const picker = row ? row.querySelector('.ppt-color-picker') : null;
+      if (picker) picker.value = color;
+    }
+  });
+
+  // Apply background removal with selected color
+  photoList.addEventListener('click', e => {
+    const btn = e.target.closest('.applyBgBtn');
+    if (!btn) return;
+    const id = parseInt(btn.dataset.id);
+    // Find selected color
+    const row = btn.closest('.ppt-row-compact');
+    let fillColor = '#ffffff';
+    if (row) {
+      const activeBtn = row.querySelector('.ppt-bg-color-btn.active');
+      if (activeBtn) fillColor = activeBtn.dataset.bgcolor;
+      const picker = row.querySelector('.ppt-color-picker');
+      // If a non-white/non-transparent color is picked via picker, use that
+      if (picker && fillColor === '#ffffff' && picker.value !== '#ffffff') {
+        fillColor = picker.value;
+      }
+    }
+    removeBackground(id, fillColor);
+  });
+
+  // Custom color picker change
+  photoList.addEventListener('input', e => {
+    if (!e.target.classList.contains('ppt-color-picker')) return;
+    const id = parseInt(e.target.dataset.id);
+    const color = e.target.value;
+    // Deselect white/transparent buttons, this is custom
+    const row = e.target.closest('.ppt-row-compact');
+    if (row) {
+      row.querySelectorAll('.ppt-bg-color-btn').forEach(b => b.classList.remove('active'));
+    }
+  });
+
+  // ── Brightness / Contrast / Saturation ──
+  function buildCssFilter(p) {
+    const b = 100 + (p.brightness || 0);
+    const c = 100 + (p.contrast || 0);
+    const s = 100 + (p.saturation || 0);
+    return 'brightness(' + b + '%) contrast(' + c + '%) saturate(' + s + '%)';
+  }
+  function buildCanvasFilter(p) {
+    const b = 100 + (p.brightness || 0);
+    const c = 100 + (p.contrast || 0);
+    const s = 100 + (p.saturation || 0);
+    return 'brightness(' + b + '%) contrast(' + c + '%) saturate(' + s + '%)';
+  }
+
+  // Apply CSS filters to preview images
+  function applyFiltersToPreview() {
+    previewArea.querySelectorAll('.ppt-slot img').forEach(img => {
+      const slot = img.closest('.ppt-slot');
+      if (!slot || !slot.dataset.copyKey) return;
+      const parts = slot.dataset.copyKey.split('-');
+      const pid = parseInt(parts[0]);
+      const p = photos.find(x => x.id === pid);
+      if (p && (p.brightness || p.contrast || p.saturation)) {
+        img.style.filter = buildCssFilter(p);
+      } else {
+        img.style.filter = '';
+      }
+    });
+  }
+
+  // Observer to apply filters after preview renders
+  const filterObserver = new MutationObserver(() => { applyFiltersToPreview(); });
+  filterObserver.observe(previewArea, { childList: true, subtree: true });
+
+  // Slider input handler
+  photoList.addEventListener('input', e => {
+    const t = e.target;
+    if (!t.classList.contains('ppt-adj-slider')) return;
+    const id = parseInt(t.dataset.id);
+    const prop = t.dataset.prop;
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    const val = parseInt(t.value);
+    requestInputUndo();
+    p[prop] = val;
+    // Update value label
+    const valEl = photoList.querySelector('.ppt-adj-val[data-id="' + id + '"][data-prop="' + prop + '"]');
+    if (valEl) valEl.textContent = val;
+    // Apply CSS filter to preview immediately
+    const card = photoList.querySelector('.ppt-card[data-id="' + id + '"]');
+    if (card) {
+      const img = card.querySelector('img');
+      if (img) img.style.filter = buildCssFilter(p);
+    }
+    // Apply to preview area images
+    previewArea.querySelectorAll('.ppt-slot img').forEach(img => {
+      const slot = img.closest('.ppt-slot');
+      if (!slot || !slot.dataset.copyKey) return;
+      const parts = slot.dataset.copyKey.split('-');
+      const pid = parseInt(parts[0]);
+      if (pid === id) {
+        img.style.filter = buildCssFilter(p);
+      }
+    });
+  });
+
+  // Reset adjustments button
+  photoList.addEventListener('click', e => {
+    const btn = e.target.closest('.resetAdjBtn');
+    if (!btn) return;
+    const id = parseInt(btn.dataset.id);
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    pushUndo();
+    p.brightness = 0; p.contrast = 0; p.saturation = 0;
+    // Update sliders
+    const card = photoList.querySelector('.ppt-card[data-id="' + id + '"]');
+    if (card) {
+      card.querySelectorAll('.ppt-adj-slider').forEach(slider => {
+        slider.value = 0;
+      });
+      card.querySelectorAll('.ppt-adj-val').forEach(val => {
+        val.textContent = '0';
+      });
+      const img = card.querySelector('img');
+      if (img) img.style.filter = '';
+    }
+    // Update preview
+    previewArea.querySelectorAll('.ppt-slot img').forEach(img => {
+      const slot = img.closest('.ppt-slot');
+      if (!slot || !slot.dataset.copyKey) return;
+      const parts = slot.dataset.copyKey.split('-');
+      const pid = parseInt(parts[0]);
+      if (pid === id) img.style.filter = '';
+    });
+    toast('Adjustments reset');
+  });
+
+  // ── Border / Frame ──
+  function applyBorderToSlot(slot, p) {
+    if (!p || !(p.borderWidth || p.borderColor)) return;
+    const bw = p.borderWidth || 0;
+    const bc = p.borderColor || '#ffffff';
+    const br = p.borderRadius || 0;
+    if (bw > 0 && bc !== 'none') {
+      slot.style.border = bw + 'mm solid ' + bc;
+      slot.style.borderRadius = br + 'mm';
+      slot.style.boxSizing = 'border-box';
+    } else {
+      slot.style.border = '';
+      slot.style.borderRadius = br > 0 ? br + 'mm' : '';
+      slot.style.boxSizing = '';
+    }
+  }
+
+  // Border slider handler
+  photoList.addEventListener('input', e => {
+    const t = e.target;
+    if (!t.classList.contains('ppt-border-slider')) return;
+    const id = parseInt(t.dataset.id);
+    const prop = t.dataset.prop;
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    const val = prop === 'borderWidth' || prop === 'borderRadius' ? parseFloat(t.value) : parseInt(t.value);
+    requestInputUndo();
+    p[prop] = val;
+    // Update value label
+    const suffix = prop === 'borderRadius' ? 'mm' : (prop === 'borderWidth' ? 'mm' : '');
+    const valEl = photoList.querySelector('.ppt-border-val[data-id="' + id + '"]' + (prop === 'borderRadius' ? '[data-prop="borderRadius"]' : ''));
+    if (valEl) valEl.textContent = val + suffix;
+    // Apply to preview slots
+    previewArea.querySelectorAll('.ppt-slot').forEach(slot => {
+      const key = slot.dataset.copyKey;
+      if (!key) return;
+      const parts = key.split('-');
+      const pid = parseInt(parts[0]);
+      if (pid === id) applyBorderToSlot(slot, p);
+    });
+  });
+
+  // Border color button clicks
+  photoList.addEventListener('click', e => {
+    const btn = e.target.closest('.ppt-border-color-btn');
+    if (!btn) return;
+    const id = parseInt(btn.dataset.id);
+    const color = btn.dataset.bordercolor;
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    requestInputUndo();
+    p.borderColor = color;
+    // Toggle active state
+    const row = btn.closest('.ppt-row-compact');
+    if (row) {
+      row.querySelectorAll('.ppt-border-color-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    // Update color picker
+    if (color !== 'none') {
+      const picker = row ? row.querySelector('.ppt-color-picker[data-prop="borderColor"]') : null;
+      if (picker) picker.value = color;
+    }
+    // Apply to preview slots
+    previewArea.querySelectorAll('.ppt-slot').forEach(slot => {
+      const key = slot.dataset.copyKey;
+      if (!key) return;
+      const parts = key.split('-');
+      const pid = parseInt(parts[0]);
+      if (pid === id) applyBorderToSlot(slot, p);
+    });
+  });
+
+  // Border color picker change
+  photoList.addEventListener('input', e => {
+    if (!e.target.classList.contains('.ppt-color-picker') || e.target.dataset.prop !== 'borderColor') return;
+    const id = parseInt(e.target.dataset.id);
+    const color = e.target.value;
+    const p = photos.find(x => x.id === id);
+    if (!p) return;
+    requestInputUndo();
+    p.borderColor = color;
+    // Deselect preset buttons
+    const row = e.target.closest('.ppt-row-compact');
+    if (row) {
+      row.querySelectorAll('.ppt-border-color-btn').forEach(b => b.classList.remove('active'));
+    }
+    // Apply to preview slots
+    previewArea.querySelectorAll('.ppt-slot').forEach(slot => {
+      const key = slot.dataset.copyKey;
+      if (!key) return;
+      const parts = key.split('-');
+      const pid = parseInt(parts[0]);
+      if (pid === id) applyBorderToSlot(slot, p);
+    });
+  });
+
+  // ── Batch Edit ──
+  // Apply selected size to all photos
+  $('batchApplySizeBtn').addEventListener('click', () => {
+    if (!photos.length || selectedPhotoId === null) { toast('Select a photo first.'); return; }
+    const src = photos.find(x => x.id === selectedPhotoId);
+    if (!src) return;
+    if (!confirm('Apply "' + (SIZE_PRESETS[src.sizeKey] || {}).label + '" size to all ' + photos.length + ' photos?')) return;
+    pushUndo();
+    photos.forEach(p => {
+      p.sizeKey = src.sizeKey;
+      p.customW = src.customW;
+      p.customH = src.customH;
+    });
+    // Update size selects
+    photoList.querySelectorAll('.sizeSelect').forEach(sel => {
+      sel.value = src.sizeKey;
+    });
+    layoutDirty = true;
+    renderAll();
+    toast('Size applied to all photos');
+  });
+
+  // Apply selected fit mode to all photos
+  $('batchApplyFitBtn').addEventListener('click', () => {
+    if (!photos.length || selectedPhotoId === null) { toast('Select a photo first.'); return; }
+    const src = photos.find(x => x.id === selectedPhotoId);
+    if (!src) return;
+    if (!confirm('Apply "' + src.fitMode + '" fit mode to all ' + photos.length + ' photos?')) return;
+    pushUndo();
+    photos.forEach(p => { p.fitMode = src.fitMode; p.posX = src.posX; p.posY = src.posY; });
+    layoutDirty = true;
+    renderAll();
+    toast('Fit mode applied to all photos');
+  });
+
+  // Apply current adjustments to all photos
+  $('batchApplyAdjBtn').addEventListener('click', () => {
+    if (!photos.length || selectedPhotoId === null) { toast('Select a photo first.'); return; }
+    const src = photos.find(x => x.id === selectedPhotoId);
+    if (!src) return;
+    const adjStr = 'B:' + src.brightness + ' C:' + src.contrast + ' S:' + src.saturation;
+    if (!confirm('Apply adjustments (' + adjStr + ') to all ' + photos.length + ' photos?')) return;
+    pushUndo();
+    photos.forEach(p => {
+      p.brightness = src.brightness;
+      p.contrast = src.contrast;
+      p.saturation = src.saturation;
+    });
+    layoutDirty = true;
+    renderAll();
+    toast('Adjustments applied to all photos');
+  });
+
   // ── Compare ──
   $('compareBtn').addEventListener('click', () => {
     compareMode = !compareMode;
@@ -1630,7 +2218,7 @@
   $('autofixBtn').addEventListener('click', () => {
     if (!photos.length) { toast('No photos to auto-fix.'); return; }
     pushUndo();
-    photos.forEach(p => { p.straighten = 0; p.rotation = 0; p.fitMode = 'cover'; p.posX = 50; p.posY = 50; p.src = p.originalSrc; });
+    photos.forEach(p => { p.straighten = 0; p.rotation = 0; p.fitMode = 'cover'; p.posX = 50; p.posY = 50; p.src = p.originalSrc; p.bgColor = '#ffffff'; p.brightness = 0; p.contrast = 0; p.saturation = 0; p.borderWidth = 0; p.borderColor = '#ffffff'; p.borderRadius = 0; });
     layoutModeType = 'auto'; copyPositions = {}; nextPlaceX = 20; nextPlaceY = 20;
     updateLayoutToggle();
     selectedPhotoId = photos.length ? photos[0].id : null;
@@ -1695,12 +2283,32 @@
             // Use absolute position in manual mode, row-flow in auto mode
             const drawX = (layoutModeType === 'manual' && item.x != null) ? Math.round(item.x * SCALE) : rx;
             const drawY = (layoutModeType === 'manual' && item.y != null) ? Math.round(item.y * SCALE) : y;
+            // Draw border if present
+            const bw = (item.borderWidth || 0) * SCALE;
+            const bc = item.borderColor || '#ffffff';
+            const br = (item.borderRadius || 0) * SCALE;
+            if (bw > 0 && bc !== 'none') {
+              ctx.save();
+              ctx.strokeStyle = bc;
+              ctx.lineWidth = bw;
+              if (br > 0) {
+                ctx.beginPath();
+                ctx.roundRect(drawX, drawY, iw, ih, br);
+                ctx.stroke();
+              } else {
+                ctx.strokeRect(drawX, drawY, iw, ih);
+              }
+              ctx.restore();
+            }
             const img = new Image();
             img.onload = () => {
               const angle = item.straighten || 0;
               const drawFn = item.fitMode === 'contain' ? drawImageContain : drawImageCover;
-              if (angle) {
+              // Apply brightness/contrast/saturation filter for export
+              const filterStr = (item.brightness || item.contrast || item.saturation) ? buildCanvasFilter(item) : '';
+              if (angle || filterStr) {
                 ctx.save();
+                if (filterStr) ctx.filter = filterStr;
                 ctx.translate(drawX + iw / 2, drawY + ih / 2);
                 ctx.rotate(angle * Math.PI / 180);
                 const sf = 1 + Math.abs(angle) / 45 * 0.3;
@@ -2114,6 +2722,18 @@
 
   // ── Window resize → re-render rulers ──
   window.addEventListener('resize', () => { renderRulers(); renderGuides(); });
+
+  // ── Keyboard shortcuts ──
+  document.addEventListener('keydown', e => {
+    // Ctrl+Z = Undo, Ctrl+Shift+Z = Redo
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      undo();
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'Z' || (e.key === 'z' && e.shiftKey))) {
+      e.preventDefault();
+      redo();
+    }
+  });
 
   updateUndoRedoButtons();
   renderAll();
