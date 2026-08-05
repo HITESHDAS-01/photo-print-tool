@@ -2066,7 +2066,7 @@
 
   // Border color picker change
   photoList.addEventListener('input', e => {
-    if (!e.target.classList.contains('.ppt-color-picker') || e.target.dataset.prop !== 'borderColor') return;
+    if (!e.target.classList.contains('ppt-color-picker') || e.target.dataset.prop !== 'borderColor') return;
     const id = parseInt(e.target.dataset.id);
     const color = e.target.value;
     const p = photos.find(x => x.id === id);
