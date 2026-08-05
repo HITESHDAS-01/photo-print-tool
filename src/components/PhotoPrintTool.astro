@@ -851,7 +851,9 @@
         const sp = document.createElement('span'); sp.style.flex = '1'; row2.appendChild(sp);
         const rb = document.createElement('button');
         rb.className = 'ppt-remove'; rb.dataset.id = p.id;
-        rb.setAttribute('aria-label', 'Remove photo'); rb.textContent = '\u2715';
+        rb.setAttribute('aria-label', 'Remove photo');
+        rb.title = 'Delete photo';
+        rb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
         row2.appendChild(rb);
         group3.appendChild(row2);
         // Background color selector row

@@ -707,12 +707,20 @@
 }
 .ppt-mini-btn:hover { background: var(--ppt-yellow); border-color: var(--ppt-yellow); }
 .ppt-remove {
-  background: none; border: none; color: var(--ppt-text-dim);
-  cursor: pointer; font-size: 13px; line-height: 1;
-  padding: 2px 3px; flex-shrink: 0; align-self: flex-start;
-  transition: color 0.15s;
+  background: rgba(193,42,42,0.08);
+  border: 1px solid rgba(193,42,42,0.15);
+  color: var(--ppt-danger);
+  cursor: pointer;
+  padding: 3px 5px;
+  flex-shrink: 0;
+  align-self: center;
+  border-radius: 4px;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
-.ppt-remove:hover { color: var(--ppt-danger); }
+.ppt-remove:hover { background: rgba(193,42,42,0.15); border-color: var(--ppt-danger); }
 
 /* Sidebar footer */
 .ppt-sidebar-foot {
